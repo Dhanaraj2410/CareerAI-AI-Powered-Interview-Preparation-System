@@ -1,3 +1,10 @@
+"""
+CareerAI Interview Multi-Factor NLP Evaluator Engine
+---------------------------------------------------
+Calculates similarity, keyword overlap, length completeness, and sentiment confidence.
+Extrapolates 4-tier feedback levels and missing technical keywords.
+"""
+
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 try:
@@ -5,10 +12,14 @@ try:
 except ImportError:
     TextBlob = None
 
+# Global cache for heavy SentenceTransformer model
 _sentence_model = None
 
 def get_sentence_model():
-    """Attempt to load SentenceTransformer for semantic embeddings if installed."""
+    """
+    Lazy loader for SentenceTransformer ('all-MiniLM-L6-v2') embeddings.
+    Returns model instance or None if library is unavailable.
+    """
     global _sentence_model
     if _sentence_model is None:
         try:
@@ -20,7 +31,8 @@ def get_sentence_model():
 
 def evaluate_answer(expected_concepts, user_answer):
     """
-    Standard Semantic Similarity evaluation.
+    Calculates semantic cosine similarity between expected concepts and candidate response.
+    Uses SentenceTransformer embeddings when available, falling back to TF-IDF vectorization.
     """
     if not user_answer or not user_answer.strip():
         return 0.0, "No response provided."
@@ -56,7 +68,8 @@ def evaluate_answer(expected_concepts, user_answer):
 
 def analyze_sentiment(text):
     """
-    Analyze candidate speech sentiment & confidence using TextBlob or heuristic fallback.
+    Analyzes sentiment polarity and subjectivity using TextBlob.
+    Maps polarity to communication confidence score (0 - 100%).
     """
     if not text or not text.strip():
         return "Uncertain", 0.0, 40.0
@@ -89,11 +102,11 @@ def analyze_sentiment(text):
 
 def get_feedback_tier(score):
     """
-    Categorizes score into 4 feedback levels:
-    80 - 100: Excellent
-    60 - 79: Good
-    40 - 59: Average
-    0 - 39: Needs Improvement
+    Maps percentage score to 4 feedback levels:
+    - 80 to 100: Excellent (pass)
+    - 60 to 79: Good (pass)
+    - 40 to 59: Average (warn)
+    - 0 to 39: Needs Improvement (danger)
     """
     if score >= 80:
         return "Excellent", "pass"
@@ -106,7 +119,7 @@ def get_feedback_tier(score):
 
 def get_missing_keywords(user_answer, keywords_str):
     """
-    Identifies missing key technical terms from candidate response.
+    Extracts key technical terms missing from the candidate's answer.
     """
     kw_list = [k.strip() for k in keywords_str.split(',') if k.strip()]
     if not kw_list:
@@ -118,9 +131,9 @@ def get_missing_keywords(user_answer, keywords_str):
 
 def evaluate_answer_learning(expected_concepts, keywords_str, user_answer, hint_used=False):
     """
-    Comprehensive Learning Evaluator:
-    Multi-Factor score with missing keywords extraction and 4-tier feedback.
-    If hint_used is True, applies a 10% penalty to final score.
+    Core Evaluation Formula:
+    Final Score = (0.50 * Similarity) + (0.25 * Keyword) + (0.15 * Completeness) + (0.10 * Confidence)
+    Applies 10% hint adjustment if candidate requested a hint.
     """
     if not user_answer or not user_answer.strip():
         return {
@@ -149,7 +162,7 @@ def evaluate_answer_learning(expected_concepts, keywords_str, user_answer, hint_
     else:
         keyword_score = 50.0
 
-    # 3. Completeness & Length (15%)
+    # 3. Completeness & Word Length (15%)
     word_count = len(user_answer.split())
     if word_count >= 30:
         completeness_score = 100.0
@@ -178,7 +191,7 @@ def evaluate_answer_learning(expected_concepts, keywords_str, user_answer, hint_
     final_score = round(min(100.0, max(0.0, raw_final)), 2)
     status_tier, tier_badge = get_feedback_tier(final_score)
 
-    # Generate Tier-Specific Feedback
+    # Generate Tier-Specific Feedback Guidance
     if status_tier == "Excellent":
         feedback = "Excellent response! You accurately covered the core technical concepts. Try adding a real-world production example to make your answer even stronger."
     elif status_tier == "Good":
@@ -202,6 +215,12 @@ def evaluate_answer_learning(expected_concepts, keywords_str, user_answer, hint_
     }
 
 def get_adaptive_difficulty(score):
+    """
+    Determines difficulty for subsequent questions based on score:
+    - score >= 80 -> hard
+    - score >= 50 -> medium
+    - score < 50 -> easy
+    """
     if score >= 80:
         return "hard"
     elif score >= 50:

@@ -1,14 +1,23 @@
+"""
+CareerAI ML Candidate Readiness Inference Engine
+------------------------------------------------
+Loads trained Random Forest Classifier and StandardScaler pipeline to compute
+weighted candidate composite scores and candidate readiness probabilities.
+"""
+
 import json
 import pathlib
 import joblib
 import numpy as np
 from .train_model import train_and_save_model, BASE_DIR
 
+# File path constants for pickled ML model assets
 MODELS_DIR = BASE_DIR / 'models'
 MODEL_PATH = MODELS_DIR / 'performance_model.pkl'
 SCALER_PATH = MODELS_DIR / 'scaler.pkl'
 METRICS_PATH = MODELS_DIR / 'metrics.json'
 
+# Global in-memory cache for ML model instances
 _model = None
 _scaler = None
 _metrics = None
@@ -16,7 +25,7 @@ _metrics = None
 def calculate_final_score(aptitude, resume, technical, communication):
     """
     Weighted scoring formula:
-    Aptitude (20%), Resume (20%), Technical Interview (40%), Communication (20%)
+    Final Score = (0.20 * Aptitude) + (0.20 * Resume) + (0.40 * Technical) + (0.20 * Communication)
     """
     final_score = (
         aptitude * 0.20 +
@@ -28,7 +37,11 @@ def calculate_final_score(aptitude, resume, technical, communication):
 
 def get_candidate_badge(probability):
     """
-    Professional readiness badge classifier.
+    Classifies readiness probability into professional badge categories:
+    - >= 80%: Excellent Profile (pass)
+    - >= 65%: High Readiness (pass)
+    - >= 50%: Moderate Readiness (warn)
+    - < 50%: Needs Improvement (danger)
     """
     if probability >= 80.0:
         return "Excellent Profile", "pass", "Candidate demonstrates top-tier readiness across all technical, aptitude, and communication dimensions."
@@ -40,6 +53,10 @@ def get_candidate_badge(probability):
         return "Needs Improvement", "danger", "Candidate requires additional technical study and mock practice before active interviewing."
 
 def load_ml_components():
+    """
+    Loads serialized Random Forest model, StandardScaler, and metrics JSON.
+    Auto-triggers model training script if model binaries are missing.
+    """
     global _model, _scaler, _metrics
     if _model is None or _scaler is None or _metrics is None:
         if not MODEL_PATH.exists() or not SCALER_PATH.exists() or not METRICS_PATH.exists():
@@ -56,7 +73,11 @@ def load_ml_components():
 
 def predict_candidate_performance(aptitude_score, resume_score, technical_score, communication_score):
     """
-    Inference pipeline for candidate readiness probability & performance evaluation.
+    Inference Pipeline:
+    1. Computes weighted composite score across 4 candidate dimensions.
+    2. Runs feature vector through StandardScaler and Random Forest predict_proba().
+    3. Blends model probability curve with composite score.
+    4. Returns readiness label, badge class, recommendation tip, and evaluation metrics.
     """
     try:
         model, scaler, metrics = load_ml_components()
@@ -90,7 +111,7 @@ def predict_candidate_performance(aptitude_score, resume_score, technical_score,
             'metrics': metrics,
             'disclaimer': metrics.get('disclaimer', 'The ML model is a prototype trained on simulated candidate performance data to demonstrate the complete machine learning pipeline.')
         }
-    except Exception as e:
+    except Exception:
         weighted_composite = calculate_final_score(aptitude_score, resume_score, technical_score, communication_score)
         status, badge_class, recommendation = get_candidate_badge(weighted_composite)
         return {
