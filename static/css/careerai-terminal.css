@@ -1,0 +1,290 @@
+/* Fintech Carbon & Precision Emerald Terminal Theme for CareerAI (Python/Django) */
+@import url('https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap');
+
+:root {
+  /* Surfaces & Structure */
+  --bg-canvas: #0a0d0e;
+  --bg-card: #111618;
+  --bg-elevated: #171e22;
+  --border-hairline: #232b30;
+  --border-focus: #10b981;
+
+  /* Typography */
+  --text-primary: #f1f5f9;
+  --text-muted: #64748b;
+
+  /* Accents */
+  --accent-emerald: #10b981;
+  --accent-emerald-glow: rgba(16, 185, 129, 0.2);
+  --accent-mint: #34d399;
+  --metric-lime: #a3e635;
+  --alert-coral: #fb7185;
+}
+
+body {
+  background-color: var(--bg-canvas);
+  /* Subtle engineering grid background */
+  background-image: 
+    linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 32px 32px;
+  background-attachment: fixed;
+  color: var(--text-primary);
+  font-family: 'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  margin: 0;
+  min-height: 100vh;
+}
+
+h1, h2, h3, h4, h5, h6, .font-heading {
+  font-family: 'Geist', sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+/* Sharp Engineering Terminal Card */
+.terminal-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-hairline);
+  border-radius: 10px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.terminal-card:hover {
+  border-color: rgba(16, 185, 129, 0.5);
+  box-shadow: 0 0 20px var(--accent-emerald-glow);
+}
+
+.glass-card, .impact-panel {
+  background: var(--bg-card);
+  border: 1px solid var(--border-hairline);
+  border-radius: 10px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  transition: border-color 0.2s ease;
+}
+
+.glass-card:hover, .impact-panel:hover {
+  border-color: rgba(16, 185, 129, 0.5);
+}
+
+/* Navigation Bar */
+.navbar-glass {
+  background: rgba(10, 13, 14, 0.92);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border-hairline);
+}
+
+.brand-text {
+  font-family: 'Geist Mono', monospace;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--accent-emerald);
+  letter-spacing: -0.5px;
+}
+
+/* Precision Emerald Button */
+.btn-emerald {
+  background: var(--accent-emerald);
+  color: #051b11;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  padding: 0.65rem 1.35rem;
+  box-shadow: 0 0 16px var(--accent-emerald-glow);
+  transition: all 0.15s ease;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-decoration: none;
+}
+
+.btn-emerald:hover {
+  background: var(--accent-mint);
+  transform: translateY(-1px);
+  box-shadow: 0 0 22px rgba(52, 211, 153, 0.35);
+  color: #051b11;
+}
+
+.btn-ai-primary, .btn-neon {
+  background: var(--accent-emerald);
+  color: #051b11;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  padding: 0.65rem 1.35rem;
+  box-shadow: 0 0 16px var(--accent-emerald-glow);
+  transition: all 0.15s ease;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.btn-ai-primary:hover, .btn-neon:hover {
+  background: var(--accent-mint);
+  color: #051b11;
+  box-shadow: 0 0 22px rgba(52, 211, 153, 0.35);
+}
+
+.btn-outline-glass {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-hairline);
+  color: var(--text-primary);
+  font-weight: 600;
+  border-radius: 6px;
+  transition: all 0.15s ease;
+}
+
+.btn-outline-glass:hover {
+  border-color: var(--accent-emerald);
+  color: var(--accent-mint);
+}
+
+/* Data Chips */
+.tag-nlp {
+  font-family: 'Geist Mono', monospace;
+  background: rgba(16, 185, 129, 0.08);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  color: var(--accent-mint);
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.tag-missing {
+  font-family: 'Geist Mono', monospace;
+  background: rgba(251, 113, 133, 0.08);
+  border: 1px solid rgba(251, 113, 133, 0.25);
+  color: var(--alert-coral);
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.badge-skill-found {
+  font-family: 'Geist Mono', monospace;
+  background: rgba(16, 185, 129, 0.08);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  color: var(--accent-mint);
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+}
+
+.badge-skill-missing {
+  font-family: 'Geist Mono', monospace;
+  background: rgba(251, 113, 133, 0.08);
+  border: 1px solid rgba(251, 113, 133, 0.25);
+  color: var(--alert-coral);
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+}
+
+.badge-prediction-pass {
+  font-family: 'Geist Mono', monospace;
+  background: rgba(16, 185, 129, 0.12);
+  color: var(--accent-emerald);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  border-radius: 4px;
+  padding: 5px 12px;
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.badge-prediction-warn {
+  font-family: 'Geist Mono', monospace;
+  background: rgba(163, 230, 53, 0.12);
+  color: var(--metric-lime);
+  border: 1px solid rgba(163, 230, 53, 0.3);
+  border-radius: 4px;
+  padding: 5px 12px;
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.badge-prediction-danger {
+  font-family: 'Geist Mono', monospace;
+  background: rgba(251, 113, 133, 0.12);
+  color: var(--alert-coral);
+  border: 1px solid rgba(251, 113, 133, 0.3);
+  border-radius: 4px;
+  padding: 5px 12px;
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+/* Monospace Numbers */
+.metric-mono {
+  font-family: 'Geist Mono', monospace;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+.stat-value {
+  font-family: 'Geist Mono', monospace;
+  font-size: 2.3rem;
+  font-weight: 700;
+}
+
+/* Progress bar */
+.progress-dark {
+  background-color: var(--bg-elevated);
+  border-radius: 4px;
+  height: 8px;
+}
+
+.progress-bar-indigo { background: var(--accent-emerald); }
+.progress-bar-emerald { background: var(--accent-mint); }
+.progress-bar-amber { background: var(--metric-lime); }
+.progress-bar-cyan { background: var(--accent-emerald); }
+
+/* Alert Box */
+.alert-glass {
+  background: var(--bg-card);
+  border: 1px solid var(--border-hairline);
+  color: var(--text-primary);
+  border-radius: 8px;
+}
+
+/* Timer Chip Monospace Pill */
+.timer-box {
+  font-family: 'Geist Mono', monospace;
+  background: var(--bg-elevated);
+  border: 1px solid var(--accent-emerald);
+  color: var(--accent-emerald);
+  font-size: 1.1rem;
+  font-weight: 700;
+  padding: 0.4rem 1rem;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.timer-box.critical {
+  border-color: var(--alert-coral);
+  color: var(--alert-coral);
+  background: rgba(251, 113, 133, 0.1);
+  box-shadow: 0 0 16px rgba(251, 113, 133, 0.3);
+}
+
+/* AI Question Prompt Card with Left Accent Line */
+.ai-question-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-hairline);
+  border-left: 4px solid var(--accent-mint);
+  border-radius: 8px;
+  padding: 1.5rem;
+}
+
+.model-disclaimer-box {
+  font-family: 'Geist Mono', monospace;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-hairline);
+  border-radius: 6px;
+  padding: 0.8rem 1.1rem;
+}

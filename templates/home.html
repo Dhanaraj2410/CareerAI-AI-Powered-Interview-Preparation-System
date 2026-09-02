@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+
+{% block title %}CareerAI - AI-Powered Smart Interview & Performance Prediction{% endblock %}
+
+{% block content %}
+<div class="row align-items-center my-5 py-4">
+    <div class="col-lg-7 mb-4 mb-lg-0">
+        <span class="badge-skill-found px-3 py-2 rounded-pill mb-3 d-inline-block">
+            <i class="fa-solid fa-bolt me-1"></i> Python + Django + Machine Learning + Gemini AI
+        </span>
+        <h1 class="display-4 fw-extrabold mb-3 text-white">
+            AI-Powered Mock Interview & <br>
+            <span style="color: var(--status-pass);">Candidate Performance Prediction</span>
+        </h1>
+        <p class="lead text-muted mb-4">
+            Accelerate your career preparation for Python, Data Science, and AI/ML roles. Get real-time NLP interview scoring, ML selection probability predictions, and Gemini AI career recommendations.
+        </p>
+        <div class="d-flex flex-wrap gap-3">
+            <a href="{% url 'register' %}" class="btn-ai-primary px-4 py-3">
+                <i class="fa-solid fa-rocket me-2"></i> Start Free Assessment
+            </a>
+            <a href="{% url 'login' %}" class="btn btn-outline-glass px-4 py-3">
+                <i class="fa-solid fa-right-to-bracket me-2"></i> Member Login
+            </a>
+        </div>
+    </div>
+    <div class="col-lg-5">
+        <div class="glass-card p-4 text-center">
+            <div class="p-3 bg-opacity-10 rounded-circle d-inline-block mb-3" style="background: rgba(0, 229, 153, 0.1);">
+                <i class="fa-solid fa-brain fa-4x" style="color: var(--status-pass);"></i>
+            </div>
+            <h3 class="mb-3 text-white">Smart Career Pipeline</h3>
+            <ul class="list-unstyled text-start text-muted d-flex flex-column gap-3">
+                <li class="d-flex align-items-center gap-3">
+                    <i class="fa-solid fa-circle-check fs-5" style="color: var(--status-pass);"></i>
+                    <span class="text-light"><strong>Aptitude Test:</strong> Timed Quantitative & Reasoning quizzes</span>
+                </li>
+                <li class="d-flex align-items-center gap-3">
+                    <i class="fa-solid fa-circle-check fs-5" style="color: var(--status-pass);"></i>
+                    <span class="text-light"><strong>Resume NLP Analyzer:</strong> Extract skills & job match score</span>
+                </li>
+                <li class="d-flex align-items-center gap-3">
+                    <i class="fa-solid fa-circle-check fs-5" style="color: var(--status-pass);"></i>
+                    <span class="text-light"><strong>AI Mock Interview:</strong> Voice & text TF-IDF similarity scoring</span>
+                </li>
+                <li class="d-flex align-items-center gap-3">
+                    <i class="fa-solid fa-circle-check fs-5" style="color: var(--status-pass);"></i>
+                    <span class="text-light"><strong>ML Prediction:</strong> Random Forest candidate selection engine</span>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 my-5">
+    <div class="col-md-4">
+        <div class="glass-card p-4 h-100">
+            <i class="fa-solid fa-microchip fa-2x text-warning mb-3"></i>
+            <h4 class="text-white">Module 1: Resume NLP</h4>
+            <p class="text-muted">Parses your resume PDF, extracts technical skills, matches against job roles, and highlights skill gaps using TF-IDF vectorization.</p>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="glass-card p-4 h-100">
+            <i class="fa-solid fa-microphone-lines fa-2x mb-3" style="color: var(--status-pass);"></i>
+            <h4 class="text-white">Module 2: AI Voice Mock</h4>
+            <p class="text-muted">Conducts role-specific technical interviews with speech-to-text input, evaluating technical accuracy and confidence sentiment.</p>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="glass-card p-4 h-100">
+            <i class="fa-solid fa-chart-pie fa-2x mb-3" style="color: var(--status-pass);"></i>
+            <h4 class="text-white">Module 3: ML Performance Prediction</h4>
+            <p class="text-muted">Uses Scikit-Learn Random Forest Classifier model to predict your hiring selection probability and generate personalized Gemini feedback.</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

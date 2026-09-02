@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block title %}Resume Builder - CareerAI{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-9">
+        <div class="glass-card p-4 p-md-5">
+            <h3 class="font-heading mb-3"><i class="fa-solid fa-file-pen text-indigo me-2"></i> Professional Resume Builder</h3>
+            <p class="text-muted mb-4">Enter your details to generate a formatted ATS resume.</p>
+
+            <form method="post">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label class="form-label text-muted small fw-bold">RESUME TITLE</label>
+                    {{ form.title }}
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label text-muted small fw-bold">CAREER OBJECTIVE</label>
+                    {{ form.objective }}
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label text-muted small fw-bold">TECHNICAL SKILLS (Comma-Separated)</label>
+                    {{ form.skills }}
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label text-muted small fw-bold">EDUCATION & ACADEMICS</label>
+                    {{ form.education }}
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label text-muted small fw-bold">KEY PROJECTS</label>
+                    {{ form.projects }}
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label text-muted small fw-bold">WORK / INTERNSHIP EXPERIENCE</label>
+                    {{ form.experience }}
+                </div>
+
+                <div class="text-end">
+                    <a href="{% url 'resume_home' %}" class="btn btn-outline-glass me-2">Cancel</a>
+                    <button type="submit" class="btn btn-primary-glow px-4 py-2">Save & Preview Resume</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

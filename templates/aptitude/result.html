@@ -1,0 +1,168 @@
+{% extends 'base.html' %}
+
+{% block title %}Aptitude Test Result & Solution Review - CareerAI{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-10">
+        <div class="glass-card p-4 p-md-5 mb-4">
+            <!-- Header Score Hero Card -->
+            <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom border-secondary flex-wrap gap-3">
+                <div>
+                    <span class="badge-skill-found text-uppercase mb-2 d-inline-block">{{ result.difficulty }} LEVEL ASSESSMENT</span>
+                    <h2 class="font-heading mb-0 text-white">Aptitude Test Result</h2>
+                    <small style="color: #cbd5e1;">Completed on {{ result.created_at|date:"M d, Y - H:i" }}</small>
+                </div>
+                <div class="text-center p-3 rounded" style="background: #1e293b; border: 1px solid #334155;">
+                    <span class="text-uppercase small d-block mb-1" style="font-family: 'JetBrains Mono', monospace; color: #cbd5e1;">OVERALL SCORE</span>
+                    <div class="stat-value display-3" style="color: {% if result.percentage >= 75 %}#34d399{% elif result.percentage >= 50 %}#fbbf24{% else %}#f43f5e{% endif %};">
+                        {{ result.percentage }}%
+                    </div>
+                </div>
+            </div>
+
+            <!-- Score Cards Row -->
+            <div class="row g-3 mb-4">
+                <div class="col-6 col-md-3">
+                    <div class="p-3 rounded text-center" style="background: #1e293b; border: 1px solid #334155;">
+                        <span class="text-muted small d-block" style="font-family: 'JetBrains Mono', monospace;">CORRECT ANSWERS</span>
+                        <strong class="fs-3" style="color: #34d399;">{{ correct_count }} ✓</strong>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="p-3 rounded text-center" style="background: #1e293b; border: 1px solid #334155;">
+                        <span class="text-muted small d-block" style="font-family: 'JetBrains Mono', monospace;">WRONG ANSWERS</span>
+                        <strong class="fs-3" style="color: #f43f5e;">{{ wrong_count }} ❌</strong>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="p-3 rounded text-center" style="background: #1e293b; border: 1px solid #334155;">
+                        <span class="text-muted small d-block" style="font-family: 'JetBrains Mono', monospace;">TOTAL QUESTIONS</span>
+                        <strong class="fs-3 text-white">{{ result.total_questions }}</strong>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="p-3 rounded text-center" style="background: #1e293b; border: 1px solid #334155;">
+                        <span class="text-muted small d-block" style="font-family: 'JetBrains Mono', monospace;">ACCURACY SCORE</span>
+                        <strong class="fs-3" style="color: #38bdf8;">{{ result.percentage }}%</strong>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Category Breakdown Grid -->
+            {% if category_breakdown %}
+            <div class="p-4 rounded-4 mb-4" style="background: #1e293b; border: 1px solid #334155;">
+                <h5 class="font-heading mb-3 text-white"><i class="fa-solid fa-chart-pie me-2" style="color: #38bdf8;"></i> Category Performance Breakdown</h5>
+                <div class="row g-3">
+                    {% for cat in category_breakdown %}
+                        <div class="col-md-6">
+                            <div class="d-flex justify-content-between mb-1 small" style="font-family: 'JetBrains Mono', monospace;">
+                                <span class="text-white">{{ cat.name }}</span>
+                                <strong style="color: {% if cat.percentage >= 75 %}#34d399{% elif cat.percentage >= 50 %}#fbbf24{% else %}#f43f5e{% endif %};">
+                                    {{ cat.score }}/{{ cat.total }} ({{ cat.percentage }}%)
+                                </strong>
+                            </div>
+                            <div class="progress progress-dark" style="height: 8px;">
+                                <div class="progress-bar" style="width: {{ cat.percentage }}%; background: {% if cat.percentage >= 75 %}#34d399{% elif cat.percentage >= 50 %}#fbbf24{% else %}#f43f5e{% endif %};"></div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Weak Topics Warning Box -->
+            {% if weak_categories %}
+            <div class="p-3 mb-4 rounded-4" style="background: rgba(244, 63, 94, 0.1); border: 1px solid #f43f5e;">
+                <span class="text-uppercase small fw-bold d-block mb-1" style="font-family: 'JetBrains Mono', monospace; color: #f43f5e;">
+                    <i class="fa-solid fa-triangle-exclamation me-1"></i> WEAK AREAS IDENTIFIED (< 60% ACCURACY):
+                </span>
+                <div class="d-flex flex-wrap gap-2 mt-1">
+                    {% for wc in weak_categories %}
+                        <span class="badge-skill-missing">⚠️ {{ wc }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Action Bar -->
+            <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+                <h4 class="font-heading mb-0 text-white"><i class="fa-solid fa-book-open me-2" style="color: #fbbf24;"></i> Question-by-Question Solution Review</h4>
+                {% if wrong_count > 0 %}
+                    <a href="{% url 'aptitude_retry_wrong' result.id %}" class="btn-ai-primary">
+                        <i class="fa-solid fa-rotate me-1"></i> Retry Wrong Questions ({{ wrong_count }}) &rarr;
+                    </a>
+                {% endif %}
+            </div>
+
+            <!-- Question-by-Question Solution Cards -->
+            {% for item in answer_details %}
+            <div class="p-4 rounded-4 mb-4" style="background: #1e293b; border: 1px solid {% if item.is_correct %}#10b981{% else %}#f43f5e{% endif %};">
+                <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
+                    <h5 class="text-white mb-0">
+                        <span class="badge-skill-found me-2">Q{{ forloop.counter }}</span> {{ item.question.question }}
+                    </h5>
+                    {% if item.is_correct %}
+                        <span class="badge-prediction-pass"><i class="fa-solid fa-circle-check me-1"></i> CORRECT</span>
+                    {% else %}
+                        <span class="badge-prediction-danger"><i class="fa-solid fa-circle-xmark me-1"></i> WRONG</span>
+                    {% endif %}
+                </div>
+
+                <!-- User Answer vs Correct Answer -->
+                <div class="row g-2 my-3 p-3 rounded" style="background: #0f172a; border: 1px solid #334155;">
+                    <div class="col-md-6">
+                        <span class="text-muted small d-block" style="font-family: 'JetBrains Mono', monospace;">YOUR ANSWER:</span>
+                        <strong class="{% if item.is_correct %}text-success{% else %}text-danger{% endif %} fs-6">
+                            {% if item.selected_answer %}
+                                {{ item.selected_answer }}) {{ item.selected_answer_text }}
+                            {% else %}
+                                Not Answered
+                            {% endif %}
+                        </strong>
+                    </div>
+                    <div class="col-md-6">
+                        <span class="text-muted small d-block" style="font-family: 'JetBrains Mono', monospace;">CORRECT ANSWER:</span>
+                        <strong class="text-success fs-6">
+                            {{ item.correct_answer }}) {{ item.correct_answer_text }}
+                        </strong>
+                    </div>
+                </div>
+
+                <!-- Explanation -->
+                {% if item.explanation %}
+                <div class="mb-3">
+                    <span class="small fw-bold d-block mb-1" style="font-family: 'JetBrains Mono', monospace; color: #38bdf8;">
+                        <i class="fa-solid fa-lightbulb me-1"></i> LOGIC / EXPLANATION:
+                    </span>
+                    <p class="small text-white mb-0">{{ item.explanation }}</p>
+                </div>
+                {% endif %}
+
+                <!-- Formula -->
+                {% if item.formula %}
+                <div class="p-2 px-3 mb-3 rounded" style="background: rgba(56, 189, 248, 0.1); border: 1px solid #38bdf8; font-family: 'JetBrains Mono', monospace;">
+                    <span class="small fw-bold text-white d-block"><i class="fa-solid fa-square-root-variable me-1" style="color: #38bdf8;"></i> FORMULA:</span>
+                    <span class="small" style="color: #38bdf8;">{{ item.formula }}</span>
+                </div>
+                {% endif %}
+
+                <!-- Solution Steps -->
+                {% if item.solution_steps %}
+                <div class="p-3 rounded small" style="background: #0f172a; border: 1px solid #334155; font-family: 'JetBrains Mono', monospace; color: #cbd5e1; white-space: pre-line;">
+                    <strong class="text-white d-block mb-1"><i class="fa-solid fa-calculator me-1" style="color: #34d399;"></i> STEP-BY-STEP SOLUTION:</strong>
+                    {{ item.solution_steps }}
+                </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+
+            <!-- Bottom Navigation -->
+            <div class="d-flex justify-content-between align-items-center mt-4 pt-3 border-top border-secondary">
+                <a href="{% url 'aptitude_home' %}" class="btn btn-outline-glass"><i class="fa-solid fa-rotate-left me-1"></i> Take Another Test</a>
+                <a href="{% url 'dashboard' %}" class="btn-ai-primary"><i class="fa-solid fa-chart-line me-1"></i> Return to Dashboard</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

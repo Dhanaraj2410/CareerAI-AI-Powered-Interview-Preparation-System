@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+
+{% block title %}Interview History - CareerAI{% endblock %}
+
+{% block content %}
+<div class="row mb-4 align-items-center">
+    <div class="col-md-8">
+        <h2 class="font-heading mb-1 text-white"><i class="fa-solid fa-clock-rotate-left me-2" style="color: #38bdf8;"></i> AI Interview History</h2>
+        <p class="small text-muted mb-0">Track all your past AI Mock Interview sessions, scores, and performance reports.</p>
+    </div>
+    <div class="col-md-4 text-md-end">
+        <a href="{% url 'interview_home' %}" class="btn-ai-primary">
+            <i class="fa-solid fa-plus me-1"></i> Start New Interview
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="glass-card p-4">
+            {% if sessions %}
+                <div class="table-responsive">
+                    <table class="table table-dark table-hover align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th>Date & Time</th>
+                                <th>Target Role</th>
+                                <th>Difficulty</th>
+                                <th>Mode</th>
+                                <th>Overall Score</th>
+                                <th>Readiness Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for s in sessions %}
+                            <tr>
+                                <td>{{ s.created_at|date:"M d, Y - H:i" }}</td>
+                                <td><strong class="text-white">{{ s.role }}</strong></td>
+                                <td><span class="badge-skill-found text-uppercase">{{ s.difficulty }}</span></td>
+                                <td><span class="badge-skill-found text-uppercase">{{ s.mode }}</span></td>
+                                <td>
+                                    <span class="badge {% if s.total_score >= 80 %}badge-prediction-pass{% elif s.total_score >= 50 %}badge-prediction-warn{% else %}badge-prediction-danger{% endif %} fs-6">
+                                        {{ s.total_score }}%
+                                    </span>
+                                </td>
+                                <td>
+                                    {% if s.total_score >= 80 %}
+                                        <span class="badge-prediction-pass">EXCELLENT</span>
+                                    {% elif s.total_score >= 65 %}
+                                        <span class="badge-prediction-pass">HIGH READINESS</span>
+                                    {% elif s.total_score >= 50 %}
+                                        <span class="badge-prediction-warn">MODERATE</span>
+                                    {% else %}
+                                        <span class="badge-prediction-danger">NEEDS IMPROVEMENT</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <a href="{% url 'interview_report' s.id %}" class="btn btn-sm btn-outline-glass">
+                                        <i class="fa-solid fa-file-lines me-1"></i> View Report
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="text-center py-5">
+                    <i class="fa-solid fa-folder-open fa-3x text-muted mb-3"></i>
+                    <h5 class="text-white">No Interview History Found</h5>
+                    <p class="text-muted small mb-4">You have not completed any AI Mock Interview sessions yet.</p>
+                    <a href="{% url 'interview_home' %}" class="btn-ai-primary">
+                        Initialize First Interview &rarr;
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

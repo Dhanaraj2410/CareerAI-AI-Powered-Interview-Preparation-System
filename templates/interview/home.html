@@ -1,0 +1,127 @@
+{% extends 'base.html' %}
+
+{% block title %}AI Mock Interview System - CareerAI{% endblock %}
+
+{% block content %}
+<div class="row mb-4 align-items-center">
+    <div class="col-md-8">
+        <h2 class="font-heading mb-1 text-white"><i class="fa-solid fa-microphone-lines me-2" style="color: #34d399;"></i> AI Mock Interview System</h2>
+        <p class="small text-muted mb-0">Role-based Section Curriculum, Adaptive Difficulty, and Multi-Factor Answer Evaluation.</p>
+    </div>
+    <div class="col-md-4 text-md-end">
+        <a href="{% url 'interview_history' %}" class="btn btn-outline-glass">
+            <i class="fa-solid fa-clock-rotate-left me-1"></i> View Interview History
+        </a>
+    </div>
+</div>
+
+<div class="row justify-content-center my-4">
+    <div class="col-md-9">
+        <div class="glass-card p-4 p-md-5">
+            <h4 class="font-heading mb-4 text-white"><i class="fa-solid fa-sliders me-2" style="color: #38bdf8;"></i> AI Interview Setup & Preferences</h4>
+            
+            <form method="post" action="{% url 'start_interview' %}">
+                {% csrf_token %}
+                <div class="row g-3 mb-4">
+                    <!-- Target Role -->
+                    <div class="col-md-6">
+                        <label class="form-label small fw-bold mb-1" style="font-family: 'JetBrains Mono', monospace; color: #38bdf8;">TARGET JOB ROLE</label>
+                        <select name="role" class="form-select form-select-lg">
+                            <option value="Python Developer" selected>Python Developer</option>
+                            <option value="Data Scientist">Data Scientist</option>
+                            <option value="ML Engineer">ML Engineer</option>
+                            <option value="Data Analyst">Data Analyst</option>
+                            <option value="Django Developer">Django Developer</option>
+                        </select>
+                    </div>
+
+                    <!-- Curriculum Section -->
+                    <div class="col-md-6">
+                        <label class="form-label small fw-bold mb-1" style="font-family: 'JetBrains Mono', monospace; color: #38bdf8;">STARTING CURRICULUM SECTION</label>
+                        <select name="section" class="form-select form-select-lg">
+                            <option value="1" selected>Section 1: Fundamentals & Basics</option>
+                            <option value="2">Section 2: OOP, Statistics & Methods</option>
+                            <option value="3">Section 3: Frameworks, APIs & ML</option>
+                            <option value="4">Section 4: Databases, SQL & Deep Learning</option>
+                            <option value="5">Section 5: Systems, MLOps & Problem Solving</option>
+                        </select>
+                    </div>
+
+                    <!-- Initial Difficulty -->
+                    <div class="col-md-4">
+                        <label class="form-label small fw-bold mb-1" style="font-family: 'JetBrains Mono', monospace; color: #38bdf8;">INITIAL DIFFICULTY</label>
+                        <select name="difficulty" class="form-select">
+                            <option value="easy">Easy (60s Timer)</option>
+                            <option value="medium" selected>Medium (120s Timer)</option>
+                            <option value="hard">Hard (180s Timer)</option>
+                        </select>
+                    </div>
+
+                    <!-- Number of Questions -->
+                    <div class="col-md-4">
+                        <label class="form-label small fw-bold mb-1" style="font-family: 'JetBrains Mono', monospace; color: #38bdf8;">QUESTIONS PER SECTION</label>
+                        <select name="total_questions" class="form-select">
+                            <option value="5" selected>5 Questions (Quick Mode)</option>
+                            <option value="10">10 Questions (Full Assessment)</option>
+                        </select>
+                    </div>
+
+                    <!-- Interview Mode -->
+                    <div class="col-md-4">
+                        <label class="form-label small fw-bold mb-1" style="font-family: 'JetBrains Mono', monospace; color: #38bdf8;">INTERVIEW MODE</label>
+                        <select name="mode" class="form-select">
+                            <option value="text" selected>Text Response</option>
+                            <option value="voice">Voice-to-Text Response</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-ai-primary btn-lg w-100 py-3 font-weight-bold justify-content-center">
+                    <i class="fa-solid fa-headset me-2"></i> Initialize AI Mock Session &rarr;
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Past Interview Sessions Table -->
+{% if past_sessions %}
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="glass-card p-4">
+            <h4 class="font-heading mb-3 text-white"><i class="fa-solid fa-clock-rotate-left me-2" style="color: #38bdf8;"></i> Recent Interview Sessions</h4>
+            <div class="table-responsive">
+                <table class="table table-dark table-hover align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Job Role</th>
+                            <th>Difficulty</th>
+                            <th>Overall Score</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for s in past_sessions %}
+                        <tr>
+                            <td>{{ s.created_at|date:"M d, Y - H:i" }}</td>
+                            <td><strong class="text-white">{{ s.role }}</strong></td>
+                            <td><span class="badge-skill-found text-uppercase">{{ s.difficulty }}</span></td>
+                            <td>
+                                <span class="badge {% if s.total_score >= 80 %}badge-prediction-pass{% elif s.total_score >= 50 %}badge-prediction-warn{% else %}badge-prediction-danger{% endif %} fs-6">
+                                    {{ s.total_score }}%
+                                </span>
+                            </td>
+                            <td><span class="badge-skill-found">{{ s.status }}</span></td>
+                            <td><a href="{% url 'interview_report' s.id %}" class="btn btn-sm btn-outline-glass">View Report</a></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

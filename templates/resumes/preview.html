@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ resume.title }} - Preview{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-9">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <a href="{% url 'resume_edit' resume.pk %}" class="btn btn-outline-glass"><i class="fa-solid fa-pen me-1"></i> Edit Resume</a>
+            <button onclick="window.print()" class="btn btn-primary-glow"><i class="fa-solid fa-print me-1"></i> Print / Download PDF</button>
+        </div>
+
+        <div class="bg-white text-dark p-5 rounded-4 shadow-lg print-area">
+            <div class="border-bottom border-2 border-primary pb-3 mb-4">
+                <h1 class="fw-bold mb-1 text-uppercase text-primary">{{ user.first_name }} {{ user.last_name }}</h1>
+                <p class="text-secondary mb-1">Target Role: {{ user.profile.target_role }} | Email: {{ user.email }}</p>
+                <p class="text-secondary small mb-0">Phone: {{ user.profile.phone|default:"+1 555-0199" }}</p>
+            </div>
+
+            {% if resume.objective %}
+            <div class="mb-4">
+                <h5 class="fw-bold text-uppercase text-dark border-bottom pb-1">Career Objective</h5>
+                <p class="text-muted mb-0">{{ resume.objective }}</p>
+            </div>
+            {% endif %}
+
+            {% if resume.skills %}
+            <div class="mb-4">
+                <h5 class="fw-bold text-uppercase text-dark border-bottom pb-1">Technical Skills</h5>
+                <p class="mb-0"><strong>Core Skills:</strong> {{ resume.skills }}</p>
+            </div>
+            {% endif %}
+
+            {% if resume.projects %}
+            <div class="mb-4">
+                <h5 class="fw-bold text-uppercase text-dark border-bottom pb-1">Key Projects</h5>
+                <p class="text-dark mb-0" style="white-space: pre-line;">{{ resume.projects }}</p>
+            </div>
+            {% endif %}
+
+            {% if resume.education %}
+            <div class="mb-4">
+                <h5 class="fw-bold text-uppercase text-dark border-bottom pb-1">Education</h5>
+                <p class="text-dark mb-0" style="white-space: pre-line;">{{ resume.education }}</p>
+            </div>
+            {% endif %}
+
+            {% if resume.experience %}
+            <div class="mb-4">
+                <h5 class="fw-bold text-uppercase text-dark border-bottom pb-1">Experience</h5>
+                <p class="text-dark mb-0" style="white-space: pre-line;">{{ resume.experience }}</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

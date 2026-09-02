@@ -1,0 +1,203 @@
+/* Enterprise "Obsidian & Electric Indigo" Design System for CareerAI */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap');
+
+:root {
+  /* Canvas & Glassmorphism Surfaces */
+  --bg-canvas: #080b11;
+  --bg-glass: rgba(17, 24, 39, 0.72);
+  --bg-surface-elevated: rgba(31, 41, 55, 0.65);
+  --border-glass: rgba(255, 255, 255, 0.08);
+  --border-active: rgba(99, 102, 241, 0.45);
+
+  /* Typography */
+  --text-primary: #f9fafb;
+  --text-muted: #94a3b8;
+
+  /* Brand Accents */
+  --accent-indigo: #6366f1;
+  --accent-indigo-glow: rgba(99, 102, 241, 0.28);
+  --accent-cyan: #06b6d4;
+
+  /* Status Colors */
+  --status-pass: #10b981;
+  --status-warn: #f59e0b;
+  --status-danger: #f43f5e;
+}
+
+/* Background Canvas with subtle gradient */
+body {
+  background-color: var(--bg-canvas);
+  background-image: 
+    radial-gradient(at 15% 15%, rgba(99, 102, 241, 0.12) 0px, transparent 40%),
+    radial-gradient(at 85% 85%, rgba(6, 182, 212, 0.08) 0px, transparent 40%);
+  background-attachment: fixed;
+  color: var(--text-primary);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  min-height: 100vh;
+  margin: 0;
+}
+
+h1, h2, h3, h4, h5, h6, .font-heading {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 700;
+}
+
+/* Production-grade Glassmorphic Card */
+.glass-card {
+  background: var(--bg-glass);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid var(--border-glass);
+  border-radius: 16px;
+  padding: 1.5rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.glass-card:hover {
+  border-color: var(--border-active);
+  box-shadow: 0 10px 30px -10px var(--accent-indigo-glow);
+  transform: translateY(-2px);
+}
+
+/* Navigation Bar */
+.navbar-glass {
+  background: rgba(8, 11, 17, 0.88);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border-glass);
+}
+
+.brand-text {
+  font-size: 1.5rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, #6366f1 0%, #06b6d4 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Primary Action Button */
+.btn-ai-primary {
+  background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  padding: 0.65rem 1.4rem;
+  font-weight: 600;
+  box-shadow: 0 0 18px var(--accent-indigo-glow);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.btn-ai-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 24px rgba(99, 102, 241, 0.45);
+  color: #ffffff;
+}
+
+.btn-outline-glass {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border-glass);
+  color: var(--text-primary);
+  font-weight: 600;
+  border-radius: 10px;
+  transition: all 0.2s ease;
+}
+
+.btn-outline-glass:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: var(--border-active);
+  color: #ffffff;
+}
+
+/* Skill & Status Badges */
+.badge-skill-found {
+  background: rgba(6, 182, 212, 0.12);
+  color: var(--accent-cyan);
+  border: 1px solid rgba(6, 182, 212, 0.28);
+  border-radius: 9999px;
+  padding: 6px 12px;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.badge-skill-missing {
+  background: rgba(244, 63, 94, 0.1);
+  color: var(--status-danger);
+  border: 1px solid rgba(244, 63, 94, 0.25);
+  border-radius: 9999px;
+  padding: 6px 12px;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.badge-prediction-pass {
+  background: rgba(16, 185, 129, 0.12);
+  color: var(--status-pass);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  border-radius: 9999px;
+  padding: 6px 14px;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.badge-prediction-warn {
+  background: rgba(245, 158, 11, 0.12);
+  color: var(--status-warn);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  border-radius: 9999px;
+  padding: 6px 14px;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.badge-prediction-danger {
+  background: rgba(244, 63, 94, 0.12);
+  color: var(--status-danger);
+  border: 1px solid rgba(244, 63, 94, 0.3);
+  border-radius: 9999px;
+  padding: 6px 14px;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+/* Metric Display Values */
+.stat-value {
+  font-size: 2.2rem;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+}
+
+.progress-dark {
+  background-color: rgba(255, 255, 255, 0.08);
+  border-radius: 9999px;
+  height: 10px;
+}
+
+.progress-bar-indigo { background: linear-gradient(90deg, #6366f1, #8b5cf6); }
+.progress-bar-emerald { background: linear-gradient(90deg, #10b981, #34d399); }
+.progress-bar-amber { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
+.progress-bar-cyan { background: linear-gradient(90deg, #06b6d4, #38bdf8); }
+
+/* Alert Box */
+.alert-glass {
+  background: rgba(17, 24, 39, 0.92);
+  border: 1px solid var(--border-glass);
+  color: var(--text-primary);
+  border-radius: 12px;
+}
+
+/* Timer Chip */
+.timer-box {
+  background: rgba(244, 63, 94, 0.15);
+  border: 1px solid rgba(244, 63, 94, 0.4);
+  color: var(--status-danger);
+  font-size: 1.2rem;
+  font-weight: 700;
+  padding: 0.4rem 1rem;
+  border-radius: 10px;
+}
+
+.model-disclaimer-box {
+  background: rgba(99, 102, 241, 0.08);
+  border: 1px solid rgba(99, 102, 241, 0.2);
+  border-radius: 12px;
+  padding: 0.85rem 1.2rem;
+}

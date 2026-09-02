@@ -1,0 +1,19 @@
+{
+  "model_name": "Random Forest Classifier",
+  "accuracy": 83.0,
+  "precision": 80.36,
+  "recall": 88.24,
+  "f1_score": 84.11,
+  "roc_auc": 86.63,
+  "confusion_matrix": [
+    [
+      38,
+      11
+    ],
+    [
+      6,
+      45
+    ]
+  ],
+  "disclaimer": "The ML model is a prototype trained on simulated candidate performance data to demonstrate the complete machine learning pipeline."
+}

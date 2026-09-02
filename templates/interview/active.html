@@ -1,0 +1,202 @@
+{% extends 'base.html' %}
+
+{% block title %}AI Live Interview Session - Question {{ q_index|add:1 }} of {{ total_questions }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-9">
+        <div class="glass-card p-4 p-md-5">
+            <!-- Header bar with Progress Bar & Timer Pill -->
+            <div class="d-flex justify-content-between align-items-center mb-3 pb-3 border-bottom border-secondary flex-wrap gap-2">
+                <div>
+                    <span class="badge-skill-found mb-1">{{ session.role|upper }} // SECTION {{ session.current_section }}: {{ section_title|upper }}</span>
+                    <h4 class="font-heading mb-0 text-white">Question {{ q_index|add:1 }} of {{ total_questions }}</h4>
+                </div>
+                
+                <!-- Per-Question Monospace Timer Pill -->
+                <div class="timer-box d-flex align-items-center gap-2" id="timerBox">
+                    <i class="fa-solid fa-stopwatch"></i>
+                    <span id="timerDisplay">--:--</span>
+                </div>
+            </div>
+
+            <!-- Progress Bar -->
+            <div class="mb-4">
+                <div class="d-flex justify-content-between small text-muted mb-1" style="font-family: 'JetBrains Mono', monospace;">
+                    <span>SECTION PROGRESS: {{ progress_percent }}%</span>
+                    <span>DIFFICULTY: <strong class="text-white text-uppercase">{{ session.difficulty }}</strong></span>
+                </div>
+                <div class="progress progress-dark" style="height: 10px;">
+                    <div class="progress-bar progress-bar-indigo" style="width: {{ progress_percent }}%;"></div>
+                </div>
+            </div>
+
+            <!-- AI Question Prompt Card with Left 5px Solid Cyan Line -->
+            <div class="ai-question-card mb-4">
+                <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
+                    <span class="badge-skill-found">
+                        <i class="fa-solid fa-robot me-1"></i> AI PROMPT // QUESTION_{{ q_index|add:1 }}
+                    </span>
+                    <a href="?hint=true" class="btn btn-sm btn-outline-glass text-warning">
+                        <i class="fa-solid fa-lightbulb me-1"></i> Get Hint
+                    </a>
+                </div>
+                <h5 class="mb-0 text-white font-heading fs-4">{{ question.question_text }}</h5>
+            </div>
+
+            <!-- Conceptual Hint Box (If Requested) -->
+            {% if show_hint or question.hint %}
+                <div class="p-3 mb-4 rounded-4" style="background: rgba(251, 191, 36, 0.1); border: 1px solid #fbbf24; font-family: 'JetBrains Mono', monospace;">
+                    <span class="d-block fw-bold mb-1" style="color: #fbbf24;"><i class="fa-solid fa-lightbulb me-1"></i> CONCEPTUAL HINT:</span>
+                    <small class="text-white">{{ question.hint|default:"Focus on key definitions, syntax differences, and memory execution." }}</small>
+                </div>
+            {% endif %}
+
+            <!-- Answer Submission Form -->
+            <form method="post" action="{% url 'submit_answer' session.id q_index %}" id="answerForm">
+                {% csrf_token %}
+                <input type="hidden" name="hint_used" value="{% if show_hint %}true{% else %}false{% endif %}">
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
+                        <label class="form-label small fw-bold mb-0" style="font-family: 'JetBrains Mono', monospace; color: #38bdf8;">TECHNICAL RESPONSE INPUT</label>
+                        <div class="d-flex gap-2">
+                            <button type="button" id="voiceBtn" class="btn btn-sm btn-outline-glass text-warning">
+                                <i class="fa-solid fa-microphone me-1"></i> Record Voice Answer
+                            </button>
+                            <button type="button" id="insertSampleBtn" class="btn btn-sm btn-outline-glass text-info">
+                                <i class="fa-solid fa-font me-1"></i> Auto-Fill Key Concepts
+                            </button>
+                        </div>
+                    </div>
+                    <textarea name="user_answer" id="userAnswerText" class="form-control form-control-lg bg-dark text-light border-secondary" rows="6" placeholder="Type your technical explanation or click 'Record Voice Answer'..." required>{% if existing_answer %}{{ existing_answer.user_answer }}{% endif %}</textarea>
+                    <div id="speechStatus" class="p-2 mt-2 rounded border border-info bg-dark" style="display:none; font-family: 'JetBrains Mono', monospace; color: #38bdf8;">
+                        <span class="pulse-indicator me-2"></span> <span id="speechStatusText">Listening to microphone...</span>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mt-4">
+                    <span class="small" style="font-family: 'JetBrains Mono', monospace; color: #cbd5e1;">
+                        <i class="fa-solid fa-brain me-1" style="color: #38bdf8;"></i> EVALUATION: SIMILARITY(50%) + KEYWORD(25%) + LENGTH(15%) + CONFIDENCE(10%)
+                    </span>
+                    <button type="submit" class="btn-ai-primary px-5">
+                        Submit & Evaluate Answer &rarr;
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Per-Question Countdown Timer JS
+    let timeRemaining = {{ timer_seconds }};
+    const timerDisplay = document.getElementById('timerDisplay');
+    const timerBox = document.getElementById('timerBox');
+    const answerForm = document.getElementById('answerForm');
+
+    function updateTimerUI() {
+        let mins = Math.floor(timeRemaining / 60);
+        let secs = timeRemaining % 60;
+        mins = mins < 10 ? '0' + mins : mins;
+        secs = secs < 10 ? '0' + secs : secs;
+        timerDisplay.innerText = `${mins}:${secs}`;
+
+        if (timeRemaining <= 30) {
+            timerBox.classList.add('critical');
+        }
+
+        if (timeRemaining <= 0) {
+            clearInterval(timerInterval);
+            alert("Time for this question has expired! Automatically submitting your answer.");
+            answerForm.submit();
+        }
+        timeRemaining--;
+    }
+
+    updateTimerUI();
+    const timerInterval = setInterval(updateTimerUI, 1000);
+
+    // Persistent Voice-to-Text Logic
+    const voiceBtn = document.getElementById('voiceBtn');
+    const insertSampleBtn = document.getElementById('insertSampleBtn');
+    const userAnswerText = document.getElementById('userAnswerText');
+    const speechStatus = document.getElementById('speechStatus');
+    const speechStatusText = document.getElementById('speechStatusText');
+
+    let recognition = null;
+    let isListening = false;
+    let accumulatedSpeech = "";
+    let baseTextOnStart = "";
+
+    insertSampleBtn.addEventListener('click', () => {
+        const concepts = "{{ question.expected_concepts|escapejs }}";
+        const sampleAnswer = "Regarding " + concepts.split(' ').slice(0, 8).join(' ') + ", the key architectural principles include " + concepts + ".";
+        userAnswerText.value = sampleAnswer;
+    });
+
+    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        recognition = new SpeechRecognition();
+        recognition.continuous = true;
+        recognition.interimResults = true;
+        recognition.lang = 'en-US';
+
+        voiceBtn.addEventListener('click', () => {
+            if (!isListening) {
+                try {
+                    baseTextOnStart = userAnswerText.value ? userAnswerText.value.trim() + " " : "";
+                    accumulatedSpeech = "";
+                    recognition.start();
+                    isListening = true;
+
+                    voiceBtn.classList.remove('btn-outline-glass', 'text-warning');
+                    voiceBtn.classList.add('btn-danger', 'text-white');
+                    voiceBtn.innerHTML = '<i class="fa-solid fa-stop me-1"></i> Stop Recording';
+                    speechStatus.style.display = 'block';
+                    speechStatusText.innerText = 'Microphone active! Speak clearly into microphone...';
+                } catch (e) {
+                    console.error("Speech start error:", e);
+                }
+            } else {
+                stopSpeech();
+            }
+        });
+
+        function stopSpeech() {
+            if (recognition && isListening) {
+                isListening = false;
+                recognition.stop();
+            }
+            voiceBtn.classList.remove('btn-danger', 'text-white');
+            voiceBtn.classList.add('btn-outline-glass', 'text-warning');
+            voiceBtn.innerHTML = '<i class="fa-solid fa-microphone me-1"></i> Record Voice Answer';
+            
+            speechStatusText.innerText = 'Recording stopped. Transcribed answer saved in text box.';
+            setTimeout(() => {
+                if (!isListening) speechStatus.style.display = 'none';
+            }, 4000);
+        }
+
+        recognition.onresult = (event) => {
+            let interimTranscript = '';
+            
+            for (let i = event.resultIndex; i < event.results.length; ++i) {
+                const transcriptSegment = event.results[i][0].transcript;
+                if (event.results[i].isFinal) {
+                    accumulatedSpeech += transcriptSegment + '. ';
+                } else {
+                    interimTranscript += transcriptSegment;
+                }
+            }
+
+            userAnswerText.value = baseTextOnStart + accumulatedSpeech + interimTranscript;
+        };
+
+        recognition.onend = () => { if (isListening) stopSpeech(); };
+    } else {
+        voiceBtn.disabled = true;
+    }
+</script>
+{% endblock %}

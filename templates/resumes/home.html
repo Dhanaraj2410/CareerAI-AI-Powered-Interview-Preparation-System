@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+
+{% block title %}Resume Builder & NLP Analyzer - CareerAI{% endblock %}
+
+{% block content %}
+<div class="row mb-4 align-items-center">
+    <div class="col-md-8">
+        <h2 class="font-heading mb-1 text-white"><i class="fa-solid fa-file-contract me-2" style="color: #38bdf8;"></i> Resume Management</h2>
+        <p class="small text-muted mb-0">Build a custom resume or upload a PDF to analyze technical skills via NLP.</p>
+    </div>
+</div>
+
+<div class="row g-4 mb-5">
+    <div class="col-md-6">
+        <div class="glass-card p-4 h-100 text-center">
+            <i class="fa-solid fa-file-pdf fa-3x mb-3" style="color: #38bdf8;"></i>
+            <h3 class="text-white">NLP Resume Analyzer</h3>
+            <p class="small mb-3" style="color: #cbd5e1;">Upload your resume PDF. Our spaCy / TF-IDF NLP engine extracts technical skills, compares against target job roles, and calculates your match score.</p>
+            <a href="{% url 'resume_analyzer' %}" class="btn-ai-primary px-4 py-2 mt-2">
+                <i class="fa-solid fa-upload me-2"></i> Upload & Analyze PDF
+            </a>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="glass-card p-4 h-100 text-center">
+            <i class="fa-solid fa-pen-to-square fa-3x mb-3" style="color: #34d399;"></i>
+            <h3 class="text-white">Resume Builder</h3>
+            <p class="small mb-3" style="color: #cbd5e1;">Create a clean, ATS-compliant professional resume. Fill in your education, technical skills, projects, and work experience.</p>
+            <a href="{% url 'resume_builder' %}" class="btn btn-outline-glass px-4 py-2 mt-2">
+                <i class="fa-solid fa-plus me-2"></i> Create New Resume
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- History of Analyzed Resumes -->
+{% if uploads %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="glass-card p-4">
+            <h4 class="font-heading mb-3 text-white"><i class="fa-solid fa-list-check me-2" style="color: #38bdf8;"></i> Analyzed PDF History</h4>
+            <div class="table-responsive">
+                <table class="table table-dark table-hover align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>Upload Date</th>
+                            <th>Target Role</th>
+                            <th>NLP Score</th>
+                            <th>Extracted Skills</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for u in uploads %}
+                        <tr>
+                            <td>{{ u.uploaded_at|date:"M d, Y" }}</td>
+                            <td><span class="badge-skill-found">{{ u.target_role }}</span></td>
+                            <td><span class="badge-prediction-pass fs-6">{{ u.resume_score }}%</span></td>
+                            <td><small style="color: #cbd5e1;">{{ u.extracted_skills|truncatewords:8 }}</small></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

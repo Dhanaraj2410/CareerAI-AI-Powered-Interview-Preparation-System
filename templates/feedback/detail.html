@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block title %}AI Personalized Career Report - CareerAI{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-9">
+        <div class="glass-card p-4 p-md-5">
+            <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom border-secondary">
+                <div>
+                    <span class="badge-skill-found mb-1"><i class="fa-solid fa-brain me-1"></i> GEMINI AI CAREER EVALUATION</span>
+                    <h2 class="font-heading mb-0 text-white">Comprehensive Feedback Report</h2>
+                    <small style="color: #cbd5e1;">Generated on {{ feedback.created_at|date:"M d, Y - H:i" }}</small>
+                </div>
+                <div class="text-center">
+                    <div class="stat-value" style="color: #fbbf24;">{{ feedback.overall_rating }} / 10</div>
+                    <span class="badge-prediction-warn">Overall Rating</span>
+                </div>
+            </div>
+
+            <!-- Strengths -->
+            <div class="mb-4 p-4 rounded-4" style="background: #1e293b; border: 1px solid #10b981;">
+                <h4 class="font-heading mb-3" style="color: #34d399;"><i class="fa-solid fa-circle-check me-2"></i> Key Candidate Strengths</h4>
+                <div class="text-white fs-5" style="white-space: pre-line;">{{ feedback.strengths }}</div>
+            </div>
+
+            <!-- Areas for Improvement -->
+            <div class="mb-4 p-4 rounded-4" style="background: #1e293b; border: 1px solid #f59e0b;">
+                <h4 class="font-heading mb-3" style="color: #fbbf24;"><i class="fa-solid fa-triangle-exclamation me-2"></i> Areas for Strategic Improvement</h4>
+                <div class="text-white fs-5" style="white-space: pre-line;">{{ feedback.areas_for_improvement }}</div>
+            </div>
+
+            <!-- Career Recommendations -->
+            <div class="mb-4 p-4 rounded-4" style="background: #1e293b; border: 1px solid #38bdf8;">
+                <h4 class="font-heading mb-3" style="color: #38bdf8;"><i class="fa-solid fa-compass me-2"></i> Career & Role Suitability Recommendation</h4>
+                <p class="text-white lead mb-0">{{ feedback.recommendation }}</p>
+            </div>
+
+            <div class="d-flex justify-content-between align-items-center mt-4 pt-3 border-top border-secondary">
+                <a href="{% url 'feedback_history' %}" class="btn btn-outline-glass"><i class="fa-solid fa-history me-1"></i> View Past Reports</a>
+                <a href="{% url 'dashboard' %}" class="btn-ai-primary"><i class="fa-solid fa-chart-line me-1"></i> Return to Dashboard</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

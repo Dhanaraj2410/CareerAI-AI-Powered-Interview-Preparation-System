@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block title %}AI Feedback Reports History - CareerAI{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-10">
+        <div class="glass-card p-4 p-md-5">
+            <h3 class="font-heading mb-4"><i class="fa-solid fa-history text-indigo me-2"></i> AI Career Feedback History</h3>
+
+            {% if feedbacks %}
+                <div class="table-responsive">
+                    <table class="table table-dark table-hover align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th>Date Generated</th>
+                                <th>Overall Rating</th>
+                                <th>Recommendation Summary</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for fb in feedbacks %}
+                            <tr>
+                                <td>{{ fb.created_at|date:"M d, Y - H:i" }}</td>
+                                <td><span class="badge bg-warning text-dark fs-6">{{ fb.overall_rating }} / 10</span></td>
+                                <td><small class="text-muted">{{ fb.recommendation|truncatewords:12 }}</small></td>
+                                <td><a href="{% url 'view_feedback' fb.id %}" class="btn btn-sm btn-outline-glass">View Full Report</a></td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="text-center py-5">
+                    <p class="text-muted">No AI feedback reports generated yet.</p>
+                    <a href="{% url 'generate_feedback' %}" class="btn btn-primary-glow">Generate Feedback Report Now</a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
