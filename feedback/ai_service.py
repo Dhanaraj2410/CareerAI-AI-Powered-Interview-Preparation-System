@@ -1,5 +1,9 @@
-import os
-import json
+"""
+CareerAI AI Feedback Service - Gemini Integration with Fallback
+--------------------------------------------------------------
+Generates personalized 7-day career feedback using Google Gemini API
+with intelligent rule-based fallback for offline/local usage.
+"""
 
 def generate_ai_career_feedback(aptitude_score, resume_score, technical_score, communication_score, target_role="Python Developer"):
     """
