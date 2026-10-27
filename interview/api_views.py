@@ -1,3 +1,10 @@
+"""
+CareerAI Interview API Views - REST API for Interview Module
+------------------------------------------------------------
+Provides JSON endpoints for interview flow, answer submission,
+evaluation, and session management.
+"""
+
 import json
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
