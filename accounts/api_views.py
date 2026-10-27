@@ -1,9 +1,9 @@
-import json
-from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.models import User
-from .models import UserProfile
+"""
+CareerAI Accounts API Views - REST Endpoints for Frontend
+--------------------------------------------------------
+Provides authentication, OTP simulation, and user profile endpoints
+for external clients (React/frontend integration).
+"""
 
 def parse_json(request):
     try:
