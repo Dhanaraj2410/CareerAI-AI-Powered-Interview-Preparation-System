@@ -1,3 +1,10 @@
+"""
+CareerAI Aptitude API Views - REST API for Aptitude Tests
+--------------------------------------------------------
+Provides JSON endpoints for starting aptitude tests, submitting
+answers, and retrieving results.
+"""
+
 import json
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
