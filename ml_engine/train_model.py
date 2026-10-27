@@ -1,22 +1,9 @@
-import os
-import json
-import pathlib
-import pandas as pd
-import numpy as np
-from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import StandardScaler
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import (
-    accuracy_score,
-    precision_score,
-    recall_score,
-    f1_score,
-    roc_auc_score,
-    confusion_matrix,
-    classification_report
-)
-import joblib
+"""
+CareerAI ML Training Pipeline - Model Training & Evaluation
+-----------------------------------------------------------
+Generates synthetic candidate dataset, trains and compares models,
+persists best model artifacts and evaluation metrics.
+"""
 
 BASE_DIR = pathlib.Path(__file__).resolve().parent
 
