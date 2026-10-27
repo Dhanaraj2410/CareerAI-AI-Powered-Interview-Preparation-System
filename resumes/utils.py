@@ -1,6 +1,9 @@
-import re
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.metrics.pairwise import cosine_similarity
+"""
+CareerAI Resume NLP Utilities - Skill Extraction & ATS Scoring
+-------------------------------------------------------------
+Extracts text from PDFs, identifies technical skills, computes TF-IDF
+based ATS match scores, and highlights missing skills for target roles.
+"""
 
 # Common tech/domain skills vocabulary
 KNOWN_SKILLS = [
