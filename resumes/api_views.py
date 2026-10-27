@@ -1,3 +1,10 @@
+"""
+CareerAI Resume API Views - REST API for Resume Analyzer
+--------------------------------------------------------
+Provides JSON endpoints for resume upload, NLP analysis,
+and ATS match scoring.
+"""
+
 import json
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
