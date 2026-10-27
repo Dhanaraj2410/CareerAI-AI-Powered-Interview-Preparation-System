@@ -1,8 +1,8 @@
 """
 CareerAI Django Project Settings - Enterprise Configuration
 -----------------------------------------------------------
-Configures database routing (MySQL primary), security middleware, custom apps,
-template processors, static files, and environment variable bindings.
+Configures database routing (MySQL primary/SQLite fallback), security middleware,
+custom apps, template processors, static files, and environment variable bindings.
 """
 
 import os
