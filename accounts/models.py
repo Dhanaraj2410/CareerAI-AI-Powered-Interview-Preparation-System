@@ -1,5 +1,9 @@
-from django.db import models
-from django.contrib.auth.models import User
+"""
+CareerAI Accounts Models - User Profile Schema
+----------------------------------------------
+Defines user profile with target role preferences, experience level,
+and additional candidate information.
+"""
 
 class UserProfile(models.Model):
     JOB_ROLE_CHOICES = (
