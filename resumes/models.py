@@ -1,5 +1,9 @@
-from django.db import models
-from django.contrib.auth.models import User
+"""
+CareerAI Resumes Models - Resume Storage Schema
+-----------------------------------------------
+Defines resume builder records and uploaded resume files
+with NLP analysis and ATS scoring results.
+"""
 
 class Resume(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='resumes')
