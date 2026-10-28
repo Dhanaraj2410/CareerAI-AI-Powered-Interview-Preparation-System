@@ -1,5 +1,9 @@
-from django.db import models
-from django.contrib.auth.models import User
+"""
+CareerAI Feedback Models - AI Feedback Storage
+----------------------------------------------
+Stores AI-generated personalized career feedback reports
+linked to user profiles and assessment scores.
+"""
 
 class Feedback(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='feedbacks')
