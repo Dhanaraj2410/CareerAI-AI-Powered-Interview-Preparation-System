@@ -5,8 +5,12 @@ Defines database entities for aptitude question banks, step-by-step solution mat
 formulas, historical user test results, and question-by-question user answer choices.
 """
 
-from django.db import models
-from django.contrib.auth.models import User
+"""
+CareerAI Aptitude Models - Aptitude Test Schema
+-----------------------------------------------
+Defines question bank and user attempt results for
+quantitative, reasoning, verbal, and data interpretation tests.
+"""
 
 class Question(models.Model):
     """
