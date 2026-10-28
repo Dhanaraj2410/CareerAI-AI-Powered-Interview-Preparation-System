@@ -3,6 +3,7 @@ CareerAI ML Candidate Readiness Inference Engine
 ------------------------------------------------
 Loads trained Random Forest Classifier and StandardScaler pipeline to compute
 weighted candidate composite scores and candidate readiness probabilities.
+Provides real-time inference with graceful fallback mechanisms.
 """
 
 import json

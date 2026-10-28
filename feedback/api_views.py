@@ -1,3 +1,10 @@
+"""
+CareerAI Feedback API Views - REST API for AI Feedback
+------------------------------------------------------
+Provides JSON endpoints for generating and retrieving AI-based
+career feedback using Gemini integration.
+"""
+
 import json
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
