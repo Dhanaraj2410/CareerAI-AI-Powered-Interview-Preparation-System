@@ -5,11 +5,20 @@ Provides authentication, OTP simulation, and user profile endpoints
 for external clients (React/frontend integration).
 """
 
+import json
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.models import User
+from .models import UserProfile
+
+
 def parse_json(request):
     try:
         return json.loads(request.body.decode('utf-8'))
     except Exception:
         return {}
+
 
 @csrf_exempt
 def api_login(request):
@@ -18,6 +27,36 @@ def api_login(request):
     
     data = parse_json(request)
     email = data.get('email', '').strip()
+    username = data.get('username', '').strip() or email.split('@')[0]
+    password = data.get('password', '')
+
+    user = None
+    if email:
+        try:
+            u_obj = User.objects.get(email=email)
+            user = authenticate(username=u_obj.username, password=password)
+        except User.DoesNotExist:
+            user = None
+            
+    if user is None and username:
+        user = authenticate(username=username, password=password)
+
+    if user is not None:
+        login(request, user)
+        profile, _ = UserProfile.objects.get_or_create(user=user)
+        return JsonResponse({
+            'status': 'success',
+            'token': f'session-{user.id}',
+            'user': {
+                'id': user.id,
+                'username': user.username,
+                'name': f"{user.first_name} {user.last_name}".strip() or user.username,
+                'email': user.email,
+                'role': profile.target_role,
+            }
+        })
+    else:
+        return JsonResponse({'message': 'Invalid email or password'}, status=400)
     username = data.get('username', '').strip() or email.split('@')[0]
     password = data.get('password', '')
 

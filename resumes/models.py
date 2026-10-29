@@ -5,6 +5,10 @@ Defines resume builder records and uploaded resume files
 with NLP analysis and ATS scoring results.
 """
 
+from django.db import models
+from django.contrib.auth.models import User
+
+
 class Resume(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='resumes')
     title = models.CharField(max_length=200, default='My Professional Resume')
@@ -17,6 +21,7 @@ class Resume(models.Model):
 
     def __str__(self):
         return f"{self.user.username} - {self.title}"
+
 
 class UploadedResume(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='uploaded_resumes')

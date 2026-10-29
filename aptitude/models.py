@@ -5,12 +5,9 @@ Defines database entities for aptitude question banks, step-by-step solution mat
 formulas, historical user test results, and question-by-question user answer choices.
 """
 
-"""
-CareerAI Aptitude Models - Aptitude Test Schema
------------------------------------------------
-Defines question bank and user attempt results for
-quantitative, reasoning, verbal, and data interpretation tests.
-"""
+from django.db import models
+from django.contrib.auth.models import User
+
 
 class Question(models.Model):
     """
@@ -59,6 +56,7 @@ class Question(models.Model):
     def __str__(self):
         return f"[{self.category.upper()}] [{self.difficulty.upper()}] {self.question[:50]}..."
 
+
 class AptitudeResult(models.Model):
     """
     Summary entity recording overall test performance, percentage accuracy,
@@ -75,14 +73,15 @@ class AptitudeResult(models.Model):
     def __str__(self):
         return f"{self.user.username} - {self.difficulty} - {self.percentage}%"
 
+
 class AptitudeAnswer(models.Model):
     """
     Question-by-question answer record linking user's selected choice to AptitudeResult.
     """
     result = models.ForeignKey(AptitudeResult, on_delete=models.CASCADE, related_name='answers')
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
-    selected_answer = models.CharField(max_length=1, blank=True, default='', help_text="Option key selected by candidate")
-    is_correct = models.BooleanField(default=False, help_text="True if selected_answer matches question.correct_answer")
+    selected_option = models.CharField(max_length=1, help_text="Option selected by candidate: A, B, C, or D")
+    is_correct = models.BooleanField(default=False)
 
     def __str__(self):
-        return f"Q{self.question.id} - Correct: {self.is_correct}"
+        return f"Answer to Q{self.question.id} - {'Correct' if self.is_correct else 'Wrong'}"
