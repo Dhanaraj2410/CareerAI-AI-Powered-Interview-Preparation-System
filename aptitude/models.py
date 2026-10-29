@@ -80,7 +80,7 @@ class AptitudeAnswer(models.Model):
     """
     result = models.ForeignKey(AptitudeResult, on_delete=models.CASCADE, related_name='answers')
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
-    selected_option = models.CharField(max_length=1, help_text="Option selected by candidate: A, B, C, or D")
+    selected_option = models.CharField(max_length=1, default='A', help_text="Option selected by candidate: A, B, C, or D")
     is_correct = models.BooleanField(default=False)
 
     def __str__(self):
