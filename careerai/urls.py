@@ -1,3 +1,9 @@
+"""
+CareerAI URL Configuration
+--------------------------
+Main URL routing for all application modules.
+"""
+
 from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
