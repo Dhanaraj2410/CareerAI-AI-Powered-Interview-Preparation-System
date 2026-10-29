@@ -54,6 +54,7 @@ To keep API keys and secrets secure, **never commit `.env` files to GitHub**.
 ## 🚀 Quickstart Guide
 
 ### 1. Installation
+
 ```bash
 git clone https://github.com/Dhanaraj2410/CareerAI-AI-Powered-Interview-Preparation-System.git
 cd CareerAI-AI-Powered-Interview-Preparation-System
