@@ -79,6 +79,7 @@ python manage.py shell -c "from interview.seed_questions import seed_interview_q
 ```
 
 ### 3. Run Development Server
+
 ```bash
 python manage.py runserver
 ```
