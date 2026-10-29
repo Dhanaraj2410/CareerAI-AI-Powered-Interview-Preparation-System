@@ -1,9 +1,7 @@
 # CareerAI - AI-Powered Mock Interview & Career Assessment System
 
 CareerAI is a **Python + Django + AI/ML + NLP** enterprise platform designed for candidate assessment, AI mock interviews, resume skill extraction, ATS scoring, and machine learning hiring readiness prediction.
-
 ---
-
 ## 🌟 Key Features
 
 1. **AI Mock Interview Engine**:
