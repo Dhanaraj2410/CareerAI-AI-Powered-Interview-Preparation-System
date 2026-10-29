@@ -98,6 +98,7 @@ Open `http://127.0.0.1:8000/` in your web browser.
 - **AI Synthesis**: Google Gemini Generative AI API (`google-generativeai`)
 - **Frontend / Theme**: High-Contrast Slate & Neon Emerald GUI (`static/css/careerai-gui.css`)
 - **Database**: SQLite3 (default) / MySQL supported
+- **File Processing**: pdfplumber, pypdf for resume parsing
 
 
 
