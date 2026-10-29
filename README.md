@@ -69,6 +69,7 @@ pip install -r requirements.txt
 ```
 
 ### 2. Database Migrations & Seed Data
+
 ```bash
 python manage.py makemigrations
 python manage.py migrate
