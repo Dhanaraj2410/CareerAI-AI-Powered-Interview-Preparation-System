@@ -27,3 +27,8 @@ ml_engine/models/*.pkl
 .idea/
 .DS_Store
 Thumbs.db
+
+# Logs
+*.log
+logs/
+
