@@ -1,82 +1,317 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-bs-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}CareerAI - AI Mock Interview & Candidate Prediction{% endblock %}</title>
-    <!-- Bootstrap 5 CSS -->
+    <title>{% block title %}CareerAI - AI-Powered Interview Preparation System{% endblock %}</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Bootstrap 5.3.2 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- FontAwesome 6 -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <!-- Maximum High-Contrast Slate & Neon Emerald GUI Theme -->
+    <!-- FontAwesome 6.5.1 -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    <!-- Highlight.js for Code Highlighting -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <!-- Main CareerAI Custom CSS -->
     {% load static %}
     <link href="{% static 'css/careerai-gui.css' %}" rel="stylesheet">
+    <link href="{% static 'css/custom.css' %}" rel="stylesheet">
+    <style>
+        :root {
+            --primary-accent: #38bdf8;
+            --emerald-accent: #10b981;
+            --indigo-accent: #6366f1;
+            --amber-accent: #fbbf24;
+            --rose-accent: #f43f5e;
+            --bg-dark: #0b0f19;
+            --card-dark: #151d2a;
+            --border-dark: #334155;
+        }
+
+        [data-bs-theme="light"] {
+            --bg-dark: #f8fafc;
+            --card-dark: #ffffff;
+            --border-dark: #e2e8f0;
+        }
+
+        [data-bs-theme="light"] body {
+            background-color: #f8fafc !important;
+            background-image: radial-gradient(at 10% 10%, rgba(59, 130, 246, 0.08) 0px, transparent 45%),
+                              radial-gradient(at 90% 90%, rgba(16, 185, 129, 0.06) 0px, transparent 45%) !important;
+            color: #0f172a !important;
+        }
+
+        [data-bs-theme="light"] .glass-card,
+        [data-bs-theme="light"] .navbar-glass {
+            background: #ffffff !important;
+            border-color: #e2e8f0 !important;
+            color: #0f172a !important;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05) !important;
+        }
+
+        [data-bs-theme="light"] h1, [data-bs-theme="light"] h2, 
+        [data-bs-theme="light"] h3, [data-bs-theme="light"] h4, 
+        [data-bs-theme="light"] h5, [data-bs-theme="light"] h6 {
+            color: #0f172a !important;
+        }
+
+        [data-bs-theme="light"] p, [data-bs-theme="light"] span, [data-bs-theme="light"] label {
+            color: #334155 !important;
+        }
+
+        [data-bs-theme="light"] .text-muted {
+            color: #64748b !important;
+        }
+
+        [data-bs-theme="light"] .form-control,
+        [data-bs-theme="light"] .form-select {
+            background-color: #ffffff !important;
+            color: #0f172a !important;
+            border-color: #cbd5e1 !important;
+        }
+
+        .navbar-glass {
+            background: rgba(11, 15, 25, 0.95);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--border-dark);
+            z-index: 1040;
+        }
+
+        .pulse-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: #10b981;
+            box-shadow: 0 0 10px #10b981;
+            animation: pulse-dot 2s infinite;
+        }
+
+        @keyframes pulse-dot {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+        }
+
+        .nav-link {
+            font-size: 0.92rem;
+            font-weight: 600;
+            padding: 0.5rem 0.75rem !important;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background: rgba(56, 189, 248, 0.1);
+            color: #38bdf8 !important;
+        }
+
+        .dropdown-menu {
+            background: var(--card-dark) !important;
+            border: 1px solid var(--border-dark) !important;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+        }
+
+        .dropdown-item {
+            color: inherit;
+            font-weight: 500;
+            padding: 0.55rem 1rem;
+            border-radius: 6px;
+        }
+
+        .dropdown-item:hover {
+            background: rgba(56, 189, 248, 0.15);
+            color: #38bdf8 !important;
+        }
+    </style>
     {% block extra_css %}{% endblock %}
 </head>
 <body>
 
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark navbar-glass fixed-top py-3">
-        <div class="container">
-            <a class="navbar-brand brand-text d-flex align-items-center gap-2" href="{% url 'home' %}">
-                <span class="pulse-indicator me-1"></span>
-                <i class="fa-solid fa-brain text-indigo"></i>
-                <span>CareerAI</span>
+    <!-- Professional SaaS Navigation Bar -->
+    <nav class="navbar navbar-expand-xl navbar-dark navbar-glass fixed-top py-2">
+        <div class="container-fluid px-lg-4">
+            <!-- Brand Logo -->
+            <a class="navbar-brand brand-text d-flex align-items-center gap-2" href="{% if user.is_authenticated %}{% url 'dashboard' %}{% else %}{% url 'home' %}{% endif %}">
+                <span class="pulse-indicator"></span>
+                <i class="fa-solid fa-brain" style="color: #38bdf8;"></i>
+                <span class="fw-bold tracking-tight">Career<span style="color: #34d399;">AI</span></span>
             </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+
+            <!-- Mobile Navbar Toggle -->
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain">
                 <span class="navbar-toggler-icon"></span>
             </button>
 
-            <div class="collapse navbar-collapse" id="navbarNav">
+            <!-- Navigation Links -->
+            <div class="collapse navbar-collapse" id="navbarMain">
                 {% if user.is_authenticated %}
-                <ul class="navbar-nav me-auto ms-4 gap-2">
+                <ul class="navbar-nav me-auto ms-xl-3 gap-1">
+                    <!-- Dashboard -->
                     <li class="nav-item">
-                        <a class="nav-link text-light" href="{% url 'dashboard' %}"><i class="fa-solid fa-chart-line me-1 text-primary"></i> Dashboard</a>
+                        <a class="nav-link text-light" href="{% url 'dashboard' %}">
+                            <i class="fa-solid fa-gauge-high me-1 text-primary"></i> Dashboard
+                        </a>
                     </li>
+
+                    <!-- AI Mock Interview -->
                     <li class="nav-item">
-                        <a class="nav-link text-light" href="{% url 'aptitude_home' %}"><i class="fa-solid fa-list-check me-1 text-warning"></i> Aptitude Test</a>
+                        <a class="nav-link text-light" href="{% url 'interview_home' %}">
+                            <i class="fa-solid fa-microphone-lines me-1 text-success"></i> Mock Interview
+                        </a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-light" href="{% url 'resume_home' %}"><i class="fa-solid fa-file-contract me-1 text-info"></i> Resume Builder & Analyzer</a>
+
+                    <!-- Aptitude & Coding Practice Dropdown -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle text-light" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="fa-solid fa-code me-1 text-warning"></i> Practice Lab
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a class="dropdown-item" href="{% url 'aptitude_home' %}">
+                                    <i class="fa-solid fa-list-check me-2 text-warning"></i> Aptitude Quizzes
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{% url 'coding_home' %}">
+                                    <i class="fa-solid fa-laptop-code me-2 text-info"></i> Coding Challenges (Python/SQL/DSA)
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{% url 'coding_history' %}">
+                                    <i class="fa-solid fa-clock-rotate-left me-2 text-muted"></i> Coding Submissions History
+                                </a>
+                            </li>
+                        </ul>
                     </li>
+
+                    <!-- Group Discussion (GD) -->
                     <li class="nav-item">
-                        <a class="nav-link text-light" href="{% url 'interview_home' %}"><i class="fa-solid fa-microphone me-1 text-success"></i> AI Mock Interview</a>
+                        <a class="nav-link text-light" href="{% url 'gd_home' %}">
+                            <i class="fa-solid fa-users-line me-1 text-info"></i> Group Discussion
+                        </a>
                     </li>
+
+                    <!-- Resume Suite Dropdown -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle text-light" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="fa-solid fa-file-contract me-1 text-danger"></i> Resume Suite
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a class="dropdown-item" href="{% url 'resume_home' %}">
+                                    <i class="fa-solid fa-folder-open me-2 text-secondary"></i> Resume Dashboard
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{% url 'resume_builder' %}">
+                                    <i class="fa-solid fa-file-circle-plus me-2 text-primary"></i> AI Resume Builder
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{% url 'resume_analyzer' %}">
+                                    <i class="fa-solid fa-chart-pie me-2 text-success"></i> ATS NLP Analyzer
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <!-- AI Assistant Chatbot -->
                     <li class="nav-item">
-                        <a class="nav-link text-light" href="{% url 'generate_feedback' %}"><i class="fa-solid fa-wand-magic-sparkles me-1 text-danger"></i> AI Feedback</a>
+                        <a class="nav-link text-light" href="{% url 'ai_assistant' %}">
+                            <i class="fa-solid fa-robot me-1 text-primary"></i> AI Assistant
+                        </a>
+                    </li>
+
+                    <!-- Career Roadmaps -->
+                    <li class="nav-item">
+                        <a class="nav-link text-light" href="{% url 'job_recommendations' %}">
+                            <i class="fa-solid fa-route me-1 text-emerald" style="color: #34d399;"></i> Roadmaps
+                        </a>
                     </li>
                 </ul>
 
-                <div class="d-flex align-items-center gap-3">
-                    <a href="{% url 'profile' %}" class="text-decoration-none text-light d-flex align-items-center gap-2">
-                        <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center text-white" style="width:36px; height:36px; font-weight:700;">
-                            {{ user.username|slice:":1"|upper }}
-                        </div>
-                        <span class="d-none d-md-inline font-weight-bold">{{ user.username }}</span>
+                <!-- Right Side Actions -->
+                <div class="d-flex align-items-center gap-2 ms-auto mt-3 mt-xl-0">
+                    <!-- Light / Dark Mode Toggle Button -->
+                    <button class="btn btn-sm btn-outline-glass px-2 py-1" id="themeToggleBtn" title="Toggle Light/Dark Mode" type="button">
+                        <i class="fa-solid fa-moon" id="themeIcon"></i>
+                    </button>
+
+                    <!-- Gemini Status Indicator -->
+                    <a href="{% url 'gemini_health' %}" class="btn btn-sm btn-outline-glass d-none d-md-inline-flex align-items-center gap-1" title="Gemini API Health Check">
+                        <i class="fa-solid fa-bolt text-warning"></i>
+                        <span class="small font-monospace">Gemini AI</span>
                     </a>
-                    <a href="{% url 'logout' %}" class="btn btn-sm btn-outline-glass"><i class="fa-solid fa-right-from-bracket me-1"></i> Logout</a>
+
+                    <!-- User Profile Dropdown -->
+                    <div class="dropdown">
+                        <button class="btn btn-sm btn-outline-glass dropdown-toggle d-flex align-items-center gap-2" type="button" data-bs-toggle="dropdown">
+                            <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center text-white" style="width:28px; height:28px; font-weight:700; font-size:0.8rem;">
+                                {{ user.username|slice:":1"|upper }}
+                            </div>
+                            <span class="font-monospace fw-bold">{{ user.username }}</span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li class="px-3 py-2 border-bottom border-secondary mb-1">
+                                <div class="fw-bold">{{ user.first_name|default:user.username }}</div>
+                                <small class="text-muted">{{ user.email|default:"Candidate" }}</small>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{% url 'profile' %}">
+                                    <i class="fa-solid fa-user-gear me-2 text-primary"></i> Profile Settings
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{% url 'change_password' %}">
+                                    <i class="fa-solid fa-key me-2 text-warning"></i> Change Password
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{% url 'generate_feedback' %}">
+                                    <i class="fa-solid fa-wand-magic-sparkles me-2 text-danger"></i> AI Feedback Report
+                                </a>
+                            </li>
+                            <li><hr class="dropdown-divider border-secondary"></li>
+                            <li>
+                                <a class="dropdown-item text-danger" href="{% url 'logout' %}">
+                                    <i class="fa-solid fa-right-from-bracket me-2"></i> Logout
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
                 {% else %}
-                <div class="ms-auto d-flex gap-2">
-                    <a href="{% url 'login' %}" class="btn btn-outline-glass px-4">Login</a>
-                    <a href="{% url 'register' %}" class="btn btn-primary-glow px-4">Get Started</a>
+                <div class="ms-auto d-flex align-items-center gap-2 mt-3 mt-xl-0">
+                    <button class="btn btn-sm btn-outline-glass px-2 py-1 me-2" id="themeToggleBtn" title="Toggle Theme" type="button">
+                        <i class="fa-solid fa-moon" id="themeIcon"></i>
+                    </button>
+                    <a href="{% url 'login' %}" class="btn btn-sm btn-outline-glass px-3">
+                        <i class="fa-solid fa-arrow-right-to-bracket me-1"></i> Sign In
+                    </a>
+                    <a href="{% url 'register' %}" class="btn btn-sm btn-ai-primary px-3">
+                        <i class="fa-solid fa-user-plus me-1"></i> Get Started
+                    </a>
                 </div>
                 {% endif %}
             </div>
         </div>
     </nav>
 
-    <!-- Main Content Container -->
-    <main class="container" style="margin-top: 100px; padding-bottom: 60px;">
+    <!-- Main Content Area -->
+    <main class="container-fluid px-lg-5" style="margin-top: 85px; padding-bottom: 70px; min-height: calc(100vh - 160px);">
         <!-- Flash Messages -->
         {% if messages %}
-            <div class="row justify-content-center mb-4">
-                <div class="col-md-10">
+            <div class="row justify-content-center mb-3">
+                <div class="col-lg-10">
                     {% for message in messages %}
-                        <div class="alert alert-glass alert-dismissible fade show d-flex align-items-center gap-2" role="alert">
-                            <i class="fa-solid fa-circle-info text-info fs-5"></i>
-                            <div>{{ message }}</div>
-                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert"></button>
+                        <div class="alert alert-glass alert-dismissible fade show d-flex align-items-center gap-2 py-2" role="alert">
+                            <i class="fa-solid {% if message.tags == 'success' %}fa-circle-check text-success{% elif message.tags == 'error' %}fa-triangle-exclamation text-danger{% else %}fa-circle-info text-info{% endif %} fs-5"></i>
+                            <div class="flex-grow-1">{{ message }}</div>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                         </div>
                     {% endfor %}
                 </div>
@@ -86,15 +321,61 @@
         {% block content %}{% endblock %}
     </main>
 
-    <!-- Footer -->
-    <footer class="footer mt-auto py-4 border-top border-secondary text-center text-muted" style="background: rgba(15, 23, 42, 0.9);">
-        <div class="container">
-            <p class="mb-0">&copy; 2026 <strong>CareerAI System</strong> | Powered by Python, Django, Scikit-Learn & Gemini AI</p>
+    <!-- Professional Footer -->
+    <footer class="footer mt-auto py-3 border-top text-center" style="background: rgba(15, 23, 42, 0.95); border-color: var(--border-dark) !important;">
+        <div class="container d-flex flex-wrap justify-content-between align-items-center small text-muted">
+            <div>
+                &copy; 2026 <strong>CareerAI Platform</strong> &bull; AI-Powered Mock Interview & Candidate Prediction
+            </div>
+            <div class="d-flex gap-3 mt-2 mt-sm-0">
+                <a href="{% url 'interview_home' %}" class="text-decoration-none text-muted">Mock Interview</a>
+                <a href="{% url 'coding_home' %}" class="text-decoration-none text-muted">Coding Lab</a>
+                <a href="{% url 'gd_home' %}" class="text-decoration-none text-muted">Group Discussion</a>
+                <a href="{% url 'gemini_health' %}" class="text-decoration-none text-muted">Gemini Status</a>
+            </div>
         </div>
     </footer>
 
-    <!-- Bootstrap 5 JS Bundle -->
+    <!-- Bootstrap 5.3.2 JS Bundle -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Highlight.js for Syntax Highlighting -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <!-- Marked.js for Markdown Rendering -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+    <!-- Theme Switcher Script -->
+    <script>
+        (function() {
+            const currentTheme = localStorage.getItem('careerai-theme') || 'dark';
+            document.documentElement.setAttribute('data-bs-theme', currentTheme);
+            updateThemeIcon(currentTheme);
+
+            const toggleBtn = document.getElementById('themeToggleBtn');
+            if (toggleBtn) {
+                toggleBtn.addEventListener('click', function() {
+                    const theme = document.documentElement.getAttribute('data-bs-theme') === 'dark' ? 'light' : 'dark';
+                    document.documentElement.setAttribute('data-bs-theme', theme);
+                    localStorage.setItem('careerai-theme', theme);
+                    updateThemeIcon(theme);
+                });
+            }
+
+            function updateThemeIcon(theme) {
+                const icon = document.getElementById('themeIcon');
+                if (icon) {
+                    if (theme === 'light') {
+                        icon.classList.remove('fa-moon');
+                        icon.classList.add('fa-sun');
+                        icon.style.color = '#fbbf24';
+                    } else {
+                        icon.classList.remove('fa-sun');
+                        icon.classList.add('fa-moon');
+                        icon.style.color = '#38bdf8';
+                    }
+                }
+            }
+        })();
+    </script>
     {% block extra_js %}{% endblock %}
 </body>
 </html>

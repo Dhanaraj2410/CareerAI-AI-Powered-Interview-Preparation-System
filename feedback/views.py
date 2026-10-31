@@ -38,7 +38,11 @@ def generate_feedback_view(request):
         overall_rating=res['overall_rating'],
         strengths=res['strengths'],
         areas_for_improvement=res['areas_for_improvement'],
-        recommendation=res['recommendation']
+        recommendation=res['recommendation'],
+        aptitude_score=aptitude_score,
+        resume_score=resume_score,
+        technical_score=technical_score,
+        communication_score=communication_score
     )
 
     messages.success(request, "AI Personalized Career Feedback Report Generated!")

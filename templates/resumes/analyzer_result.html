@@ -1,65 +1,140 @@
 {% extends 'base.html' %}
 
-{% block title %}Resume NLP Analysis Report - CareerAI Terminal{% endblock %}
+{% block title %}Resume ATS & AI Analysis Report - CareerAI{% endblock %}
 
 {% block content %}
 <div class="row justify-content-center">
-    <div class="col-md-9">
-        <div class="terminal-card p-4 p-md-5">
-            <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom border-secondary">
+    <div class="col-lg-10">
+        <div class="glass-card p-4 p-md-5">
+            <!-- Header -->
+            <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom border-secondary flex-wrap gap-2">
                 <div>
-                    <span class="tag-nlp mb-1">TARGET ROLE: {{ upload.target_role|upper }}</span>
-                    <h3 class="font-heading mb-0 text-white"><i class="fa-solid fa-square-poll-vertical me-2" style="color: var(--accent-mint);"></i> Resume NLP Skill Matrix</h3>
+                    <span class="badge bg-primary font-monospace small px-2 py-1 mb-1">
+                        TARGET ROLE: {{ upload.target_role|upper }}
+                    </span>
+                    <h3 class="font-heading mb-0 text-white">
+                        <i class="fa-solid fa-square-poll-vertical me-2 text-info"></i> Resume ATS & AI Match Report
+                    </h3>
                 </div>
                 <div class="text-center">
-                    <div class="metric-mono display-4" style="color: var(--accent-emerald);">{{ upload.resume_score }}%</div>
-                    <span class="tag-nlp">ATS MATCH SCORE</span>
+                    <div class="display-4 fw-extrabold" style="color: {% if upload.resume_score >= 75 %}#34d399{% elif upload.resume_score >= 50 %}#fbbf24{% else %}#f43f5e{% endif %};">
+                        {{ upload.resume_score }}%
+                    </div>
+                    <span class="badge bg-success font-monospace small">ATS COMPATIBILITY SCORE</span>
                 </div>
             </div>
 
-            <!-- Extracted Skills Matrix -->
+            <!-- Role Suitability Assessment -->
+            {% if nlp.role_suitability %}
+            <div class="p-3 rounded mb-4 d-flex align-items-center gap-3" style="background: rgba(56, 189, 248, 0.08); border: 1px solid rgba(56, 189, 248, 0.3);">
+                <i class="fa-solid fa-robot text-info fs-4"></i>
+                <div>
+                    <span class="small font-monospace fw-bold text-info d-block">AI ROLE ASSESSMENT:</span>
+                    <p class="mb-0 text-white small font-monospace">{{ nlp.role_suitability }}</p>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Scoring Breakdown Grid -->
+            <div class="row g-3 mb-4 font-monospace small text-center">
+                <div class="col-md-6">
+                    <div class="p-3 rounded" style="background: rgba(30, 41, 59, 0.6); border: 1px solid var(--border-card);">
+                        <span class="text-muted d-block mb-1">TF-IDF SEMANTIC MATCH:</span>
+                        <strong class="fs-4 text-info">{{ nlp.tfidf_score }}%</strong>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="p-3 rounded" style="background: rgba(30, 41, 59, 0.6); border: 1px solid var(--border-card);">
+                        <span class="text-muted d-block mb-1">ESSENTIAL SKILL COVERAGE:</span>
+                        <strong class="fs-4 text-success">{{ nlp.coverage_score }}%</strong>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Identified Skills -->
             <div class="mb-4">
-                <h5 class="font-heading text-white mb-3" style="font-family: 'Geist Mono', monospace;">
-                    <i class="fa-solid fa-check-double text-success me-2"></i> IDENTIFIED_TECHNICAL_SKILLS:
-                </h5>
+                <span class="small font-monospace text-success fw-bold d-block mb-2">
+                    <i class="fa-solid fa-circle-check me-1"></i> DETECTED TECHNICAL SKILLS IN RESUME:
+                </span>
                 <div class="d-flex flex-wrap gap-2">
                     {% for skill in nlp.extracted_skills %}
-                        <span class="tag-nlp">{{ skill }}</span>
+                        <span class="badge-skill-found px-3 py-1">{{ skill }}</span>
                     {% empty %}
-                        <p class="text-muted small" style="font-family: 'Geist Mono', monospace;">NO_TECHNICAL_KEYWORDS_IDENTIFIED</p>
+                        <span class="text-muted small font-monospace">No technical skills detected.</span>
                     {% endfor %}
                 </div>
             </div>
 
-            <!-- Missing Skills Matrix -->
+            <!-- Missing Skills -->
             <div class="mb-4">
-                <h5 class="font-heading text-white mb-3" style="font-family: 'Geist Mono', monospace;">
-                    <i class="fa-solid fa-triangle-exclamation text-warning me-2"></i> DEFICIENT_JOB_KEYWORDS:
-                </h5>
+                <span class="small font-monospace text-warning fw-bold d-block mb-2">
+                    <i class="fa-solid fa-triangle-exclamation me-1"></i> RECOMMENDED HIGH-DEMAND SKILLS MISSING:
+                </span>
                 <div class="d-flex flex-wrap gap-2">
                     {% for missing in nlp.missing_skills %}
-                        <span class="tag-missing">+ {{ missing }}</span>
+                        <span class="badge bg-secondary font-monospace">+ {{ missing }}</span>
                     {% empty %}
-                        <span class="tag-nlp">OPTIMAL_SKILL_COVERAGE_DETECTED</span>
+                        <span class="text-success small font-monospace"><i class="fa-solid fa-check me-1"></i> Full skill coverage for {{ upload.target_role }}!</span>
                     {% endfor %}
                 </div>
             </div>
 
-            <!-- Breakdown Metrics Grid -->
-            <div class="row g-3 my-4 p-3 rounded" style="background: var(--bg-elevated); border: 1px solid var(--border-hairline); font-family: 'Geist Mono', monospace;">
+            <!-- Weak Sections & Actionable Suggestions 2-Column Grid -->
+            <div class="row g-3 mb-4">
+                {% if nlp.weak_sections %}
                 <div class="col-md-6">
-                    <div class="text-muted small fw-bold">TF-IDF COSINE SIMILARITY SCORE</div>
-                    <h4 class="text-white fw-bold mb-0" style="color: var(--accent-mint);">{{ nlp.tfidf_score }}%</h4>
+                    <div class="p-3 rounded h-100" style="background: rgba(244, 63, 94, 0.08); border: 1px solid rgba(244, 63, 94, 0.3);">
+                        <span class="small font-monospace fw-bold text-danger d-block mb-2">
+                            <i class="fa-solid fa-triangle-exclamation me-1"></i> WEAK SECTIONS IDENTIFIED:
+                        </span>
+                        <ul class="text-white small mb-0 ps-3">
+                            {% for ws in nlp.weak_sections %}
+                            <li>{{ ws }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
                 </div>
+                {% endif %}
+
+                {% if nlp.suggestions %}
                 <div class="col-md-6">
-                    <div class="text-muted small fw-bold">ROLE REQUIREMENT COVERAGE</div>
-                    <h4 class="text-white fw-bold mb-0" style="color: var(--metric-lime);">{{ nlp.coverage_score }}%</h4>
+                    <div class="p-3 rounded h-100" style="background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.3);">
+                        <span class="small font-monospace fw-bold text-success d-block mb-2">
+                            <i class="fa-solid fa-lightbulb me-1"></i> ACTIONABLE ATS IMPROVEMENTS:
+                        </span>
+                        <ul class="text-white small mb-0 ps-3">
+                            {% for sug in nlp.suggestions %}
+                            <li>{{ sug }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
                 </div>
+                {% endif %}
             </div>
 
-            <div class="mt-4 pt-3 text-end border-top border-secondary">
-                <a href="{% url 'resume_analyzer' %}" class="btn btn-outline-glass me-2">Analyze Another Resume</a>
-                <a href="{% url 'dashboard' %}" class="btn-emerald">Return to Dashboard</a>
+            <!-- Recommended Roles -->
+            {% if nlp.recommended_roles %}
+            <div class="p-3 rounded mb-4" style="background: rgba(30, 41, 59, 0.6); border: 1px solid var(--border-card);">
+                <span class="small font-monospace text-info fw-bold d-block mb-2">
+                    <i class="fa-solid fa-route me-1"></i> ALTERNATIVE SUITABLE ROLES:
+                </span>
+                <div class="d-flex flex-wrap gap-2">
+                    {% for rr in nlp.recommended_roles %}
+                    <a href="{% url 'job_recommendations' %}?role={{ rr|urlencode }}" class="badge bg-primary text-decoration-none font-monospace p-2">
+                        {{ rr }} &rarr;
+                    </a>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            <div class="d-flex justify-content-between align-items-center pt-3 border-top border-secondary flex-wrap gap-2">
+                <a href="{% url 'resume_analyzer' %}" class="btn btn-outline-glass">
+                    <i class="fa-solid fa-file-arrow-up me-1"></i> Upload Another Resume
+                </a>
+                <a href="{% url 'job_recommendations' %}" class="btn btn-ai-primary px-4">
+                    Explore Career Roadmap &rarr;
+                </a>
             </div>
         </div>
     </div>

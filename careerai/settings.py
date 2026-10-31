@@ -16,9 +16,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv(BASE_DIR / '.env')
 
 # Security Keys & Debug Flags
-SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-careerai-ai-ml-mock-interview-secret-key-2026')
+SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-careerai-ai-ml-mock-interview-secret-key-2026-production-secure-long-random-value')
 DEBUG = os.environ.get('DEBUG', 'True').lower() in ('true', '1', 't')
-ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '127.0.0.1,localhost').split(',')
+ALLOWED_HOSTS = [h.strip() for h in os.environ.get('ALLOWED_HOSTS', '127.0.0.1,localhost,testserver').split(',') if h.strip()]
+if 'testserver' not in ALLOWED_HOSTS:
+    ALLOWED_HOSTS.append('testserver')
 
 # Installed Django Applications & Custom Modules
 INSTALLED_APPS = [

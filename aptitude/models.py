@@ -1,8 +1,9 @@
 """
-CareerAI Aptitude Models - Database Schema Definitions
-------------------------------------------------------
+CareerAI Aptitude & Coding Models - Database Schema Definitions
+--------------------------------------------------------------
 Defines database entities for aptitude question banks, step-by-step solution math,
-formulas, historical user test results, and question-by-question user answer choices.
+formulas, historical user test results, and coding practice challenges for Python,
+SQL, and Data Structures & Algorithms (DSA).
 """
 
 from django.db import models
@@ -41,10 +42,6 @@ class Question(models.Model):
     topic = models.CharField(max_length=100, default='General Aptitude')
 
     def get_option_text(self, option_key):
-        """
-        Maps option key ('A', 'B', 'C', 'D') to actual option choice text.
-        Example: 'B' -> '60 km/h'
-        """
         options = {
             'A': self.option_a,
             'B': self.option_b,
@@ -58,10 +55,6 @@ class Question(models.Model):
 
 
 class AptitudeResult(models.Model):
-    """
-    Summary entity recording overall test performance, percentage accuracy,
-    difficulty level, and category breakdown.
-    """
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='aptitude_results')
     difficulty = models.CharField(max_length=10)
     category = models.CharField(max_length=30, default='all')
@@ -75,9 +68,6 @@ class AptitudeResult(models.Model):
 
 
 class AptitudeAnswer(models.Model):
-    """
-    Question-by-question answer record linking user's selected choice to AptitudeResult.
-    """
     result = models.ForeignKey(AptitudeResult, on_delete=models.CASCADE, related_name='answers')
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
     selected_option = models.CharField(max_length=1, default='A', help_text="Option selected by candidate: A, B, C, or D")
@@ -85,3 +75,61 @@ class AptitudeAnswer(models.Model):
 
     def __str__(self):
         return f"Answer to Q{self.question.id} - {'Correct' if self.is_correct else 'Wrong'}"
+
+
+class CodingQuestion(models.Model):
+    """
+    Coding practice challenges for Python, SQL, and DSA with automated test cases.
+    """
+    CATEGORY_CHOICES = (
+        ('python', 'Python Programming'),
+        ('sql', 'SQL & Databases'),
+        ('dsa', 'Data Structures & Algorithms'),
+    )
+
+    DIFFICULTY_CHOICES = (
+        ('easy', 'Easy'),
+        ('medium', 'Medium'),
+        ('hard', 'Hard'),
+    )
+
+    title = models.CharField(max_length=200)
+    slug = models.SlugField(max_length=220, unique=True, blank=True)
+    category = models.CharField(max_length=20, choices=CATEGORY_CHOICES, default='python')
+    difficulty = models.CharField(max_length=10, choices=DIFFICULTY_CHOICES, default='easy')
+    description = models.TextField(help_text="Full problem statement with constraints and examples")
+    sample_input = models.TextField(blank=True, default='')
+    sample_output = models.TextField(blank=True, default='')
+    starter_code = models.TextField(blank=True, default='')
+    solution_code = models.TextField(blank=True, default='')
+    explanation = models.TextField(blank=True, default='')
+    test_cases_json = models.TextField(default='[]', help_text="JSON list of test cases with inputs and expected outputs")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            from django.utils.text import slugify
+            base_slug = slugify(self.title) or "coding-question"
+            self.slug = base_slug
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"[{self.category.upper()}] {self.title} ({self.difficulty})"
+
+
+class CodingSubmission(models.Model):
+    """
+    User submission attempt for a coding challenge with test evaluation results.
+    """
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='coding_submissions')
+    question = models.ForeignKey(CodingQuestion, on_delete=models.CASCADE, related_name='submissions')
+    code = models.TextField()
+    status = models.CharField(max_length=30, default='Pending') # 'Passed', 'Failed', 'Error'
+    passed_tests = models.IntegerField(default=0)
+    total_tests = models.IntegerField(default=0)
+    output_log = models.TextField(blank=True, default='')
+    ai_feedback = models.TextField(blank=True, default='')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.user.username} - {self.question.title} ({self.status})"

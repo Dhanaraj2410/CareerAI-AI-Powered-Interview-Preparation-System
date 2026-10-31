@@ -1,82 +1,127 @@
 {% extends 'base.html' %}
 
-{% block title %}Aptitude Test Assessment - CareerAI{% endblock %}
+{% block title %}Aptitude Assessment - CareerAI{% endblock %}
 
 {% block content %}
 <div class="row mb-4 align-items-center">
-    <div class="col-md-8">
-        <h2 class="font-heading mb-1 text-white"><i class="fa-solid fa-calculator text-warning me-2"></i> Aptitude Assessment</h2>
-        <p class="small text-muted mb-0">Select difficulty level to evaluate Quantitative, Logical & Verbal reasoning skills.</p>
+    <div class="col-lg-8">
+        <div class="d-flex align-items-center gap-2 mb-1">
+            <span class="badge bg-warning text-dark font-monospace small px-2 py-1 rounded-pill">
+                <i class="fa-solid fa-list-check me-1"></i> TIMED MCQS
+            </span>
+            <span class="text-muted small">&bull; Quantitative, Logical Reasoning, Verbal Ability & Data Interpretation</span>
+        </div>
+        <h2 class="display-6 fw-bold mb-0 text-white">
+            <i class="fa-solid fa-calculator text-warning me-2"></i> Aptitude Assessment Quizzes
+        </h2>
+    </div>
+    <div class="col-lg-4 text-lg-end mt-3 mt-lg-0 d-flex gap-2 justify-content-lg-end">
+        <a href="{% url 'coding_home' %}" class="btn btn-sm btn-outline-glass text-info">
+            <i class="fa-solid fa-laptop-code me-1"></i> Switch to Coding Lab
+        </a>
     </div>
 </div>
 
-<div class="row g-4 mb-5">
+<!-- Test Level Cards -->
+<div class="row g-4 mb-4">
     <!-- Easy -->
     <div class="col-md-4">
-        <div class="glass-card p-4 text-center">
-            <span class="badge-skill-found mb-3 d-inline-block">EASY LEVEL</span>
-            <h4 class="text-white mt-2">Foundational Quiz</h4>
-            <p class="small mb-3" style="color: #cbd5e1;">Basic numerical calculations, simple logic sequences, and vocabulary tests.</p>
-            <a href="{% url 'aptitude_test' 'easy' %}" class="btn btn-outline-glass w-100 mt-2">Start Easy Test (5 Mins)</a>
+        <div class="glass-card p-4 text-center h-100 d-flex flex-column justify-content-between">
+            <div>
+                <span class="badge bg-success font-monospace px-3 py-1 mb-3 d-inline-block">EASY LEVEL</span>
+                <h4 class="text-white fw-bold mb-2">Foundational Quiz</h4>
+                <p class="small text-muted mb-3 font-monospace" style="line-height: 1.6;">
+                    Basic numerical calculations, arithmetic speed, percentage basics, and simple syllogisms.
+                </p>
+            </div>
+            <a href="{% url 'aptitude_test' 'easy' %}?new=true" class="btn btn-outline-glass font-monospace w-100">
+                Start Easy Quiz (5 Mins) &rarr;
+            </a>
         </div>
     </div>
 
     <!-- Medium -->
     <div class="col-md-4">
-        <div class="glass-card p-4 text-center border-warning">
-            <span class="badge-prediction-warn mb-3 d-inline-block">MEDIUM LEVEL</span>
-            <h4 class="text-white mt-2">Standard Assessment</h4>
-            <p class="small mb-3" style="color: #cbd5e1;">Speed & distance, blood relations, work & time, and verbal analogy questions.</p>
-            <a href="{% url 'aptitude_test' 'medium' %}" class="btn-ai-primary w-100 mt-2 justify-content-center">Start Medium Test (5 Mins)</a>
+        <div class="glass-card p-4 text-center h-100 d-flex flex-column justify-content-between border-warning">
+            <div>
+                <span class="badge bg-warning text-dark font-monospace px-3 py-1 mb-3 d-inline-block">MEDIUM LEVEL</span>
+                <h4 class="text-white fw-bold mb-2">Standard Assessment</h4>
+                <p class="small text-muted mb-3 font-monospace" style="line-height: 1.6;">
+                    Time & work, speed & distance, blood relations, profit & loss, and verbal reasoning.
+                </p>
+            </div>
+            <a href="{% url 'aptitude_test' 'medium' %}?new=true" class="btn btn-ai-primary font-monospace w-100 justify-content-center">
+                Start Medium Quiz (5 Mins) &rarr;
+            </a>
         </div>
     </div>
 
     <!-- Hard -->
     <div class="col-md-4">
-        <div class="glass-card p-4 text-center">
-            <span class="badge-prediction-danger mb-3 d-inline-block">HARD LEVEL</span>
-            <h4 class="text-white mt-2">Advanced Analytics</h4>
-            <p class="small mb-3" style="color: #cbd5e1;">Compound interest, probability, clock angles, and complex logical deductions.</p>
-            <a href="{% url 'aptitude_test' 'hard' %}" class="btn btn-outline-glass w-100 mt-2">Start Hard Test (5 Mins)</a>
+        <div class="glass-card p-4 text-center h-100 d-flex flex-column justify-content-between">
+            <div>
+                <span class="badge bg-danger font-monospace px-3 py-1 mb-3 d-inline-block">HARD LEVEL</span>
+                <h4 class="text-white fw-bold mb-2">Advanced Analytics</h4>
+                <p class="small text-muted mb-3 font-monospace" style="line-height: 1.6;">
+                    Permutations & combinations, probability, data interpretation charts, and multi-step deduction.
+                </p>
+            </div>
+            <a href="{% url 'aptitude_test' 'hard' %}?new=true" class="btn btn-outline-glass font-monospace w-100">
+                Start Hard Quiz (5 Mins) &rarr;
+            </a>
         </div>
     </div>
 </div>
 
 <!-- Past Test Results -->
 {% if results %}
-<div class="row">
-    <div class="col-12">
-        <div class="glass-card p-4">
-            <h4 class="font-heading mb-3 text-white"><i class="fa-solid fa-clock-rotate-left me-2" style="color: #38bdf8;"></i> Your Test History</h4>
-            <div class="table-responsive">
-                <table class="table table-dark table-hover align-middle mb-0">
-                    <thead>
-                        <tr>
-                            <th>Date</th>
-                            <th>Difficulty</th>
-                            <th>Score</th>
-                            <th>Percentage</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for r in results %}
-                        <tr>
-                            <td>{{ r.created_at|date:"M d, Y - H:i" }}</td>
-                            <td><span class="badge-skill-found text-uppercase">{{ r.difficulty }}</span></td>
-                            <td><strong class="text-white">{{ r.score }}</strong> / {{ r.total_questions }}</td>
-                            <td>
-                                <span class="badge {% if r.percentage >= 75 %}badge-prediction-pass{% elif r.percentage >= 50 %}badge-prediction-warn{% else %}badge-prediction-danger{% endif %} fs-6">
-                                    {{ r.percentage }}%
-                                </span>
-                            </td>
-                            <td><a href="{% url 'aptitude_result' r.id %}" class="btn btn-sm btn-outline-glass">View Details</a></td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </div>
+<div class="glass-card p-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h4 class="font-heading mb-0 text-white font-monospace">
+            <i class="fa-solid fa-clock-rotate-left me-2 text-info"></i> Your Aptitude Test History
+        </h4>
+        <span class="badge bg-primary font-monospace">{{ results.count }} Tests</span>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-dark table-hover align-middle mb-0" style="background: transparent;">
+            <thead>
+                <tr class="small font-monospace text-muted border-secondary">
+                    <th>DATE & TIME</th>
+                    <th>DIFFICULTY</th>
+                    <th>SCORE</th>
+                    <th>ACCURACY</th>
+                    <th class="text-end">ACTION</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for r in results|slice:":8" %}
+                <tr class="border-secondary font-monospace">
+                    <td class="small text-muted">{{ r.created_at|date:"M d, Y &bull; H:i" }}</td>
+                    <td>
+                        <span class="badge {% if r.difficulty == 'easy' %}bg-success{% elif r.difficulty == 'hard' %}bg-danger{% else %}bg-warning text-dark{% endif %} text-uppercase">
+                            {{ r.difficulty }}
+                        </span>
+                    </td>
+                    <td><strong class="text-white">{{ r.score }}</strong> / {{ r.total_questions }}</td>
+                    <td>
+                        <span class="badge {% if r.percentage >= 75 %}bg-success{% elif r.percentage >= 50 %}bg-warning text-dark{% else %}bg-danger{% endif %} fs-6">
+                            {{ r.percentage }}%
+                        </span>
+                    </td>
+                    <td class="text-end">
+                        <a href="{% url 'aptitude_result' r.id %}" class="btn btn-sm btn-outline-glass px-2 py-1">
+                            Review Details
+                        </a>
+                        {% if r.percentage < 100 %}
+                        <a href="{% url 'aptitude_retry_wrong' r.id %}" class="btn btn-sm btn-outline-glass text-warning px-2 py-1 ms-1">
+                            Retry Wrong
+                        </a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
 </div>
 {% endif %}

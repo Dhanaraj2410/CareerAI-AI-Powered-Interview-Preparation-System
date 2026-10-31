@@ -7,7 +7,19 @@ urlpatterns = [
     path('login/', views.login_view, name='login'),
     path('logout/', views.logout_view, name='logout'),
     path('profile/', views.profile_view, name='profile'),
+    path('password-change/', views.change_password_view, name='change_password'),
     path('dashboard/', views.dashboard_view, name='dashboard'),
+
+    # AI Learning Assistant / Chatbot
+    path('assistant/', views.assistant_view, name='ai_assistant'),
+    path('assistant/send/', views.api_assistant_send, name='api_assistant_send'),
+    path('assistant/clear/', views.api_assistant_clear, name='api_assistant_clear'),
+
+    # Job Recommendations & Roadmaps
+    path('recommendations/', views.job_recommendations_view, name='job_recommendations'),
+
+    # Admin / System Gemini API Health Check
+    path('health-check/', views.gemini_health_view, name='gemini_health'),
 
     # REST API endpoints for React Frontend
     path('api/auth/login', api_views.api_login),

@@ -1,33 +1,43 @@
 {% extends 'base.html' %}
 
-{% block title %}CareerAI Dashboard - {{ user.username }}{% endblock %}
+{% block title %}Dashboard - CareerAI System{% endblock %}
 
 {% block content %}
 <div class="row mb-4 align-items-center">
-    <div class="col-md-8">
-        <h2 class="font-heading mb-1 text-white">
-            Welcome, <span style="color: #38bdf8;">{{ user.first_name|default:user.username }}</span> 👋
+    <div class="col-lg-8">
+        <div class="d-flex align-items-center gap-2 mb-1">
+            <span class="badge-skill-found px-2 py-1 rounded-pill small">
+                <i class="fa-solid fa-crosshairs me-1"></i> TARGET ROLE
+            </span>
+            <span class="font-monospace fw-bold text-info">{{ profile.target_role|upper }}</span>
+            <span class="text-muted small">&bull; {{ profile.experience_level }}</span>
+        </div>
+        <h2 class="display-6 fw-bold mb-0 text-white">
+            Welcome back, <span style="color: #38bdf8;">{{ user.first_name|default:user.username }}</span> 👋
         </h2>
-        <p class="mb-0 small" style="font-family: 'JetBrains Mono', monospace; color: #cbd5e1;">
-            TARGET BENCHMARK: <span class="badge-skill-found">{{ profile.target_role|upper }}</span>
-        </p>
     </div>
-    <div class="col-md-4 text-md-end mt-3 mt-md-0">
-        <a href="{% url 'generate_feedback' %}" class="btn-ai-primary">
-            <i class="fa-solid fa-wand-magic-sparkles me-1"></i> Refresh AI Feedback
+    <div class="col-lg-4 text-lg-end mt-3 mt-lg-0 d-flex flex-wrap gap-2 justify-content-lg-end">
+        <a href="{% url 'start_interview' %}" class="btn btn-sm btn-ai-primary">
+            <i class="fa-solid fa-play me-1"></i> Start New Interview
+        </a>
+        <a href="{% url 'generate_feedback' %}" class="btn btn-sm btn-outline-glass">
+            <i class="fa-solid fa-wand-magic-sparkles me-1 text-danger"></i> AI Feedback
         </a>
     </div>
 </div>
 
-<!-- Score Metrics Row -->
+<!-- 4 Dimension Score Metrics Row -->
 <div class="row g-3 mb-4">
     <!-- Aptitude Score (20% Weight) -->
     <div class="col-6 col-md-3">
-        <div class="glass-card text-center">
-            <div class="mb-2" style="color: #fbbf24;"><i class="fa-solid fa-calculator fa-2x"></i></div>
-            <div class="stat-value" style="color: #fbbf24;">{{ aptitude_score }}%</div>
-            <div class="small fw-bold text-uppercase mt-1" style="font-family: 'JetBrains Mono', monospace; color: #cbd5e1;">Aptitude (20%)</div>
-            <div class="progress progress-dark mt-2">
+        <div class="glass-card text-center p-3">
+            <div class="d-flex justify-content-between align-items-center mb-1">
+                <span class="small font-monospace text-muted">APTITUDE</span>
+                <i class="fa-solid fa-calculator text-warning"></i>
+            </div>
+            <div class="stat-value text-warning fs-2 fw-extrabold">{{ aptitude_score }}%</div>
+            <div class="small text-muted font-monospace mt-1">Weight: 20%</div>
+            <div class="progress progress-dark mt-2" style="height: 6px;">
                 <div class="progress-bar progress-bar-amber" style="width: {{ aptitude_score }}%"></div>
             </div>
         </div>
@@ -35,11 +45,14 @@
 
     <!-- Resume Score (20% Weight) -->
     <div class="col-6 col-md-3">
-        <div class="glass-card text-center">
-            <div class="mb-2" style="color: #38bdf8;"><i class="fa-solid fa-file-code fa-2x"></i></div>
-            <div class="stat-value" style="color: #38bdf8;">{{ resume_score }}%</div>
-            <div class="small fw-bold text-uppercase mt-1" style="font-family: 'JetBrains Mono', monospace; color: #cbd5e1;">Resume NLP (20%)</div>
-            <div class="progress progress-dark mt-2">
+        <div class="glass-card text-center p-3">
+            <div class="d-flex justify-content-between align-items-center mb-1">
+                <span class="small font-monospace text-muted">RESUME ATS</span>
+                <i class="fa-solid fa-file-contract text-info"></i>
+            </div>
+            <div class="stat-value text-info fs-2 fw-extrabold">{{ resume_score }}%</div>
+            <div class="small text-muted font-monospace mt-1">Weight: 20%</div>
+            <div class="progress progress-dark mt-2" style="height: 6px;">
                 <div class="progress-bar progress-bar-cyan" style="width: {{ resume_score }}%"></div>
             </div>
         </div>
@@ -47,11 +60,14 @@
 
     <!-- Technical Interview (40% Weight) -->
     <div class="col-6 col-md-3">
-        <div class="glass-card text-center">
-            <div class="mb-2" style="color: #818cf8;"><i class="fa-solid fa-laptop-code fa-2x"></i></div>
-            <div class="stat-value" style="color: #818cf8;">{{ technical_score }}%</div>
-            <div class="small fw-bold text-uppercase mt-1" style="font-family: 'JetBrains Mono', monospace; color: #cbd5e1;">Technical (40%)</div>
-            <div class="progress progress-dark mt-2">
+        <div class="glass-card text-center p-3">
+            <div class="d-flex justify-content-between align-items-center mb-1">
+                <span class="small font-monospace text-muted">TECHNICAL</span>
+                <i class="fa-solid fa-laptop-code text-primary"></i>
+            </div>
+            <div class="stat-value text-primary fs-2 fw-extrabold">{{ technical_score }}%</div>
+            <div class="small text-muted font-monospace mt-1">Weight: 40%</div>
+            <div class="progress progress-dark mt-2" style="height: 6px;">
                 <div class="progress-bar progress-bar-indigo" style="width: {{ technical_score }}%"></div>
             </div>
         </div>
@@ -59,137 +75,258 @@
 
     <!-- Communication (20% Weight) -->
     <div class="col-6 col-md-3">
-        <div class="glass-card text-center">
-            <div class="mb-2" style="color: #34d399;"><i class="fa-solid fa-comments fa-2x"></i></div>
-            <div class="stat-value" style="color: #34d399;">{{ communication_score }}%</div>
-            <div class="small fw-bold text-uppercase mt-1" style="font-family: 'JetBrains Mono', monospace; color: #cbd5e1;">Communication (20%)</div>
-            <div class="progress progress-dark mt-2">
+        <div class="glass-card text-center p-3">
+            <div class="d-flex justify-content-between align-items-center mb-1">
+                <span class="small font-monospace text-muted">CONFIDENCE</span>
+                <i class="fa-solid fa-comments text-success"></i>
+            </div>
+            <div class="stat-value text-success fs-2 fw-extrabold">{{ communication_score }}%</div>
+            <div class="small text-muted font-monospace mt-1">Weight: 20%</div>
+            <div class="progress progress-dark mt-2" style="height: 6px;">
                 <div class="progress-bar progress-bar-emerald" style="width: {{ communication_score }}%"></div>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Main Prediction & Target Benchmark Showcase Row -->
+<!-- Main Prediction & ML Intelligence Showcase Row -->
 <div class="row g-3 mb-4">
-    <!-- Prediction Metric Card -->
-    <div class="col-md-8">
-        <div class="glass-card h-100">
-            <div class="d-flex justify-content-between align-items-center mb-2">
-                <span class="text-uppercase small fw-bold" style="font-family: 'JetBrains Mono', monospace; color: #38bdf8;">
-                    <i class="fa-solid fa-robot me-1"></i> ML READINESS ENGINE // {{ ml_result.metrics.model_name|upper }}
+    <!-- ML Candidate Readiness Gauge Card -->
+    <div class="col-lg-8">
+        <div class="glass-card h-100 p-4">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <span class="text-uppercase small fw-bold font-monospace text-info">
+                    <i class="fa-solid fa-brain me-1"></i> ML READINESS INFERENCE ENGINE // {{ ml_result.metrics.model_name|upper }}
                 </span>
-                <span class="badge-prediction-{{ ml_result.badge_class }}">
+                <span class="badge-prediction-{{ ml_result.badge_class }} px-3 py-1 rounded-pill">
                     {{ ml_result.status }}
                 </span>
             </div>
 
-            <div class="d-flex align-items-baseline gap-3 my-3">
-                <span class="metric-mono display-3" style="color: {% if ml_result.probability >= 75 %}#34d399{% elif ml_result.probability >= 50 %}#fbbf24{% else %}#f43f5e{% endif %};">
-                    {{ ml_result.probability }}%
-                </span>
-                <div>
-                    <h4 class="mb-1 text-white">Selection Readiness: {{ ml_result.status }}</h4>
-                    <p class="mb-0 small" style="font-family: 'JetBrains Mono', monospace; color: #cbd5e1;">
-                        Weighted Composite: <strong class="text-white">{{ ml_result.weighted_composite }}%</strong> (Aptitude 20%, Resume 20%, Tech 40%, Comm 20%)
-                    </p>
+            <div class="row align-items-center my-3">
+                <div class="col-md-5 text-center text-md-start">
+                    <span class="metric-mono display-3 fw-extrabold" style="color: {% if ml_result.probability >= 75 %}#34d399{% elif ml_result.probability >= 50 %}#fbbf24{% else %}#f43f5e{% endif %};">
+                        {{ ml_result.probability }}%
+                    </span>
+                    <div class="text-muted font-monospace small">Estimated Hiring Selection Probability</div>
                 </div>
-            </div>
-
-            <div class="progress progress-dark" style="height: 10px;">
-                <div class="progress-bar" style="width: {{ ml_result.probability }}%; background: linear-gradient(90deg, #2563eb, #34d399);"></div>
+                <div class="col-md-7 mt-3 mt-md-0">
+                    <h5 class="text-white mb-1">Readiness Assessment: {{ ml_result.status }}</h5>
+                    <p class="small text-muted mb-2 font-monospace">
+                        Weighted Composite Score: <strong class="text-white">{{ ml_result.weighted_composite }}%</strong>
+                    </p>
+                    <div class="progress progress-dark" style="height: 10px;">
+                        <div class="progress-bar" style="width: {{ ml_result.probability }}%; background: linear-gradient(90deg, #2563eb, #34d399);"></div>
+                    </div>
+                </div>
             </div>
 
             <!-- Model Evaluation Metrics Grid -->
-            <div class="my-3 p-3 rounded" style="background: #1e293b; border: 1px solid #334155;">
+            <div class="p-3 rounded mt-3" style="background: rgba(30, 41, 59, 0.6); border: 1px solid var(--border-card);">
                 <div class="d-flex justify-content-between align-items-center mb-2">
-                    <span class="text-uppercase small fw-bold" style="font-family: 'JetBrains Mono', monospace; color: #38bdf8;">
-                        CLASSIFICATION MODEL METRICS
+                    <span class="text-uppercase small fw-bold font-monospace text-info">
+                        SCIKIT-LEARN MODEL BENCHMARKS (TEST SET)
                     </span>
                 </div>
-                <div class="row g-2 text-center small" style="font-family: 'JetBrains Mono', monospace;">
+                <div class="row g-2 text-center small font-monospace">
                     <div class="col-3">
-                        <span class="d-block" style="color: #cbd5e1;">ACCURACY</span>
-                        <strong class="fs-6" style="color: #34d399;">{{ ml_result.metrics.accuracy }}%</strong>
+                        <span class="d-block text-muted">ACCURACY</span>
+                        <strong class="fs-6 text-success">{{ ml_result.metrics.accuracy }}%</strong>
                     </div>
                     <div class="col-3">
-                        <span class="d-block" style="color: #cbd5e1;">PRECISION</span>
-                        <strong class="fs-6" style="color: #38bdf8;">{{ ml_result.metrics.precision }}%</strong>
+                        <span class="d-block text-muted">PRECISION</span>
+                        <strong class="fs-6 text-info">{{ ml_result.metrics.precision }}%</strong>
                     </div>
                     <div class="col-3">
-                        <span class="d-block" style="color: #cbd5e1;">RECALL</span>
-                        <strong class="fs-6" style="color: #fbbf24;">{{ ml_result.metrics.recall }}%</strong>
+                        <span class="d-block text-muted">RECALL</span>
+                        <strong class="fs-6 text-warning">{{ ml_result.metrics.recall }}%</strong>
                     </div>
                     <div class="col-3">
-                        <span class="d-block" style="color: #cbd5e1;">F1 SCORE</span>
+                        <span class="d-block text-muted">F1 SCORE</span>
                         <strong class="fs-6 text-white">{{ ml_result.metrics.f1_score }}%</strong>
                     </div>
                 </div>
             </div>
 
-            <!-- Model Disclaimer -->
-            <div class="model-disclaimer-box d-flex align-items-start gap-2">
-                <i class="fa-solid fa-circle-info fs-5 mt-1" style="color: #38bdf8;"></i>
-                <small class="mb-0" style="font-family: 'JetBrains Mono', monospace; color: #cbd5e1;">
-                    <strong class="text-white">Model Disclaimer:</strong> {{ ml_result.disclaimer }}
-                </small>
+            <div class="d-flex align-items-start gap-2 mt-3 pt-2 border-top border-secondary small text-muted font-monospace">
+                <i class="fa-solid fa-circle-info text-info mt-1"></i>
+                <div>{{ ml_result.recommendation }}</div>
             </div>
         </div>
     </div>
 
-    <!-- Role Target Quick-Launch -->
-    <div class="col-md-4">
-        <div class="glass-card d-flex flex-column justify-content-between h-100">
+    <!-- Career Suite Quick Launch Panel -->
+    <div class="col-lg-4">
+        <div class="glass-card h-100 p-4 d-flex flex-column justify-content-between">
             <div>
-                <span class="text-uppercase small fw-bold d-block mb-1" style="font-family: 'JetBrains Mono', monospace; color: #38bdf8;">TARGET BENCHMARK</span>
-                <h3 class="text-white fw-bold mb-2">{{ profile.target_role }}</h3>
-                <div class="d-flex flex-wrap gap-1 mt-2">
-                    <span class="badge-skill-found">Python</span>
-                    <span class="badge-skill-found">Scikit-Learn</span>
-                    <span class="badge-skill-found">NLP</span>
-                    <span class="badge-skill-missing">SQL Joins</span>
-                </div>
+                <span class="text-uppercase small fw-bold font-monospace text-info d-block mb-2">PREPARATION LABS</span>
+                
+                <div class="d-flex flex-column gap-2 mb-3">
+                    <a href="{% url 'interview_home' %}" class="d-flex align-items-center justify-content-between p-2 rounded text-decoration-none" style="background: rgba(255,255,255,0.04); border: 1px solid var(--border-card);">
+                        <div class="d-flex align-items-center gap-2">
+                            <i class="fa-solid fa-microphone text-success"></i>
+                            <span class="text-white small fw-bold">Mock Interview</span>
+                        </div>
+                        <span class="badge bg-secondary small font-monospace">Launch</span>
+                    </a>
 
-                {% if latest_feedback %}
-                    <div class="mt-3 p-3 rounded" style="background: #1e293b; border: 1px solid #334155;">
-                        <span class="text-uppercase small d-block mb-1 fw-bold" style="color: #fbbf24; font-family: 'JetBrains Mono', monospace;">
-                            GEMINI AI RATING: {{ latest_feedback.overall_rating }}/10
-                        </span>
-                        <p class="small mb-0" style="color: #cbd5e1;">{{ latest_feedback.recommendation|truncatewords:18 }}</p>
-                    </div>
-                {% endif %}
+                    <a href="{% url 'coding_home' %}" class="d-flex align-items-center justify-content-between p-2 rounded text-decoration-none" style="background: rgba(255,255,255,0.04); border: 1px solid var(--border-card);">
+                        <div class="d-flex align-items-center gap-2">
+                            <i class="fa-solid fa-laptop-code text-primary"></i>
+                            <span class="text-white small fw-bold">Coding Lab</span>
+                        </div>
+                        <span class="badge bg-primary small font-monospace">{{ coding_solved }} Solved</span>
+                    </a>
+
+                    <a href="{% url 'gd_home' %}" class="d-flex align-items-center justify-content-between p-2 rounded text-decoration-none" style="background: rgba(255,255,255,0.04); border: 1px solid var(--border-card);">
+                        <div class="d-flex align-items-center gap-2">
+                            <i class="fa-solid fa-users-line text-info"></i>
+                            <span class="text-white small fw-bold">Group Discussion</span>
+                        </div>
+                        <span class="badge bg-info small font-monospace">{{ gd_count }} Practiced</span>
+                    </a>
+
+                    <a href="{% url 'resume_analyzer' %}" class="d-flex align-items-center justify-content-between p-2 rounded text-decoration-none" style="background: rgba(255,255,255,0.04); border: 1px solid var(--border-card);">
+                        <div class="d-flex align-items-center gap-2">
+                            <i class="fa-solid fa-file-contract text-warning"></i>
+                            <span class="text-white small fw-bold">Resume ATS Analyzer</span>
+                        </div>
+                        <span class="badge bg-warning text-dark small font-monospace">{{ resume_score }}%</span>
+                    </a>
+
+                    <a href="{% url 'ai_assistant' %}" class="d-flex align-items-center justify-content-between p-2 rounded text-decoration-none" style="background: rgba(255,255,255,0.04); border: 1px solid var(--border-card);">
+                        <div class="d-flex align-items-center gap-2">
+                            <i class="fa-solid fa-robot text-danger"></i>
+                            <span class="text-white small fw-bold">AI Technical Chatbot</span>
+                        </div>
+                        <span class="badge bg-danger small font-monospace">24/7 AI</span>
+                    </a>
+
+                    <a href="{% url 'job_recommendations' %}" class="d-flex align-items-center justify-content-between p-2 rounded text-decoration-none" style="background: rgba(255,255,255,0.04); border: 1px solid var(--border-card);">
+                        <div class="d-flex align-items-center gap-2">
+                            <i class="fa-solid fa-route text-emerald" style="color:#34d399;"></i>
+                            <span class="text-white small fw-bold">Career Roadmaps</span>
+                        </div>
+                        <span class="badge bg-success small font-monospace">Explore</span>
+                    </a>
+                </div>
             </div>
-            <a href="{% url 'interview_home' %}" class="btn-ai-primary text-center text-decoration-none mt-3 justify-content-center">
-                Initialize AI Interview &rarr;
-            </a>
+
+            <!-- Gemini Status -->
+            <div class="p-2 rounded d-flex align-items-center justify-content-between" style="background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.2);">
+                <span class="small font-monospace" style="color: #34d399;">
+                    <i class="fa-solid fa-bolt me-1"></i> Gemini AI Engine
+                </span>
+                <span class="badge {% if gemini_active %}bg-success{% else %}bg-secondary{% endif %} small">
+                    {% if gemini_active %}Active{% else %}Offline Fallback{% endif %}
+                </span>
+            </div>
         </div>
     </div>
 </div>
 
-<!-- Module Action Cards -->
+<!-- Recent Interview Sessions & AI Feedback Card -->
 <div class="row g-3">
-    <div class="col-md-4">
-        <div class="glass-card p-4 text-center">
-            <i class="fa-solid fa-calculator fa-2x text-warning mb-3"></i>
-            <h5 class="text-white">Aptitude Assessment</h5>
-            <p class="small mb-3" style="color: #cbd5e1;">Timed quantitative & reasoning test modules.</p>
-            <a href="{% url 'aptitude_home' %}" class="btn btn-outline-glass w-100">Take Aptitude Test</a>
+    <!-- Recent Interview Attempts -->
+    <div class="col-lg-7">
+        <div class="glass-card p-4 h-100">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="text-white mb-0 font-monospace">
+                    <i class="fa-solid fa-clock-rotate-left me-1 text-primary"></i> RECENT MOCK INTERVIEWS
+                </h5>
+                <a href="{% url 'interview_history' %}" class="small text-info text-decoration-none font-monospace">View All &rarr;</a>
+            </div>
+
+            {% if recent_interviews %}
+            <div class="table-responsive">
+                <table class="table table-dark table-hover align-middle mb-0" style="background: transparent;">
+                    <thead>
+                        <tr class="small font-monospace text-muted border-secondary">
+                            <th>ROLE & TYPE</th>
+                            <th>SCORE</th>
+                            <th>DATE</th>
+                            <th class="text-end">ACTION</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for s in recent_interviews %}
+                        <tr class="border-secondary">
+                            <td>
+                                <div class="fw-bold text-white">{{ s.role }}</div>
+                                <small class="text-muted font-monospace">{{ s.interview_type|default:"Technical" }} &bull; {{ s.difficulty }}</small>
+                            </td>
+                            <td>
+                                <span class="badge {% if s.total_score >= 70 %}bg-success{% elif s.total_score >= 50 %}bg-warning text-dark{% else %}bg-danger{% endif %} font-monospace">
+                                    {{ s.total_score }}%
+                                </span>
+                            </td>
+                            <td class="small text-muted font-monospace">
+                                {{ s.created_at|date:"M d, Y" }}
+                            </td>
+                            <td class="text-end">
+                                <a href="{% url 'interview_report' session_id=s.id %}" class="btn btn-sm btn-outline-glass py-0 px-2 font-monospace">
+                                    Report
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center py-4 text-muted">
+                <i class="fa-solid fa-microphone-slash fa-2x mb-2 text-secondary"></i>
+                <p class="mb-2">No interview sessions recorded yet.</p>
+                <a href="{% url 'interview_home' %}" class="btn btn-sm btn-ai-primary">
+                    Start Your First Mock Interview
+                </a>
+            </div>
+            {% endif %}
         </div>
     </div>
-    <div class="col-md-4">
-        <div class="glass-card p-4 text-center">
-            <i class="fa-solid fa-file-contract fa-2x mb-3" style="color: #38bdf8;"></i>
-            <h5 class="text-white">Resume NLP Analyzer</h5>
-            <p class="small mb-3" style="color: #cbd5e1;">PDF text skill extraction & ATS match scoring.</p>
-            <a href="{% url 'resume_home' %}" class="btn btn-outline-glass w-100">Analyze Resume</a>
-        </div>
-    </div>
-    <div class="col-md-4">
-        <div class="glass-card p-4 text-center">
-            <i class="fa-solid fa-microphone-lines fa-2x mb-3" style="color: #34d399;"></i>
-            <h5 class="text-white">AI Mock Interview</h5>
-            <p class="small mb-3" style="color: #cbd5e1;">Voice/text answer evaluation via sentence embeddings.</p>
-            <a href="{% url 'interview_home' %}" class="btn btn-outline-glass w-100">Start Interview</a>
+
+    <!-- Latest AI Feedback Highlights -->
+    <div class="col-lg-5">
+        <div class="glass-card p-4 h-100">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="text-white mb-0 font-monospace">
+                    <i class="fa-solid fa-wand-magic-sparkles me-1 text-danger"></i> AI CAREER FEEDBACK
+                </h5>
+                <a href="{% url 'generate_feedback' %}" class="small text-danger text-decoration-none font-monospace">Regenerate</a>
+            </div>
+
+            {% if latest_feedback %}
+            <div class="mb-3">
+                <div class="d-flex align-items-center gap-2 mb-2">
+                    <span class="fs-4 fw-extrabold text-warning">{{ latest_feedback.overall_rating }}/10</span>
+                    <span class="badge bg-primary font-monospace small">Overall Career Rating</span>
+                </div>
+                <p class="small text-muted mb-3 font-monospace">
+                    {{ latest_feedback.recommendation|truncatechars:180 }}
+                </p>
+
+                <div class="mb-2">
+                    <span class="small font-monospace text-success d-block fw-bold mb-1">KEY STRENGTHS</span>
+                    <div class="small text-muted" style="white-space: pre-line;">{{ latest_feedback.strengths|truncatechars:140 }}</div>
+                </div>
+
+                <div class="mt-2">
+                    <span class="small font-monospace text-warning d-block fw-bold mb-1">RECOMMENDED FOCUS</span>
+                    <div class="small text-muted" style="white-space: pre-line;">{{ latest_feedback.areas_for_improvement|truncatechars:140 }}</div>
+                </div>
+            </div>
+            <a href="{% url 'view_feedback' feedback_id=latest_feedback.id %}" class="btn btn-sm btn-outline-glass w-100">
+                View Full Feedback Report &rarr;
+            </a>
+            {% else %}
+            <div class="text-center py-4 text-muted">
+                <i class="fa-solid fa-sparkles fa-2x mb-2 text-secondary"></i>
+                <p class="mb-2">Generate your personalized AI career report based on your test and interview scores.</p>
+                <a href="{% url 'generate_feedback' %}" class="btn btn-sm btn-outline-glass">
+                    Generate AI Feedback
+                </a>
+            </div>
+            {% endif %}
         </div>
     </div>
 </div>

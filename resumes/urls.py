@@ -6,6 +6,8 @@ urlpatterns = [
     path('builder/', views.resume_builder, name='resume_builder'),
     path('builder/<int:pk>/', views.resume_builder, name='resume_edit'),
     path('preview/<int:pk>/', views.resume_preview, name='resume_preview'),
+    path('download/<int:pk>/', views.resume_download_pdf, name='resume_download_pdf'),
+    path('generate-summary/', views.api_generate_ai_summary, name='generate_resume_summary'),
     path('analyzer/', views.resume_analyzer, name='resume_analyzer'),
 
     # REST API endpoints for React Frontend

@@ -1,16 +1,21 @@
 """
-CareerAI AI Feedback Service - Gemini Integration with Fallback
---------------------------------------------------------------
-Generates personalized 7-day career feedback using Google Gemini API
-with intelligent rule-based fallback for offline/local usage.
+CareerAI AI Feedback Service - Integrated Gemini AI & ML Evaluation
+-------------------------------------------------------------------
+Generates personalized career recommendations using Google Gemini API
+via the central `careerai.gemini_service` module.
 """
+
+import os
+import json
+import logging
+from careerai.gemini_service import is_gemini_configured, generate_gemini_text, clean_json_response
+
+logger = logging.getLogger('careerai.feedback')
 
 def generate_ai_career_feedback(aptitude_score, resume_score, technical_score, communication_score, target_role="Python Developer"):
     """
-    Generate structured personalized feedback via Gemini API or intelligent rule-based engine.
+    Generate structured personalized feedback via Gemini API with intelligent local fallback.
     """
-    api_key = os.environ.get("GEMINI_API_KEY", "").strip()
-
     prompt = f"""
 You are an expert AI Career Coach evaluating a candidate preparing for a {target_role} role.
 
@@ -28,33 +33,34 @@ Generate a comprehensive feedback report in valid JSON format with the following
 
 Respond ONLY with valid JSON.
 """
+    if is_gemini_configured():
+        text, err = generate_gemini_text(
+            prompt,
+            system_instruction="You are an expert executive career coach. Return strict JSON only.",
+            json_mode=True
+        )
+        if text and not err:
+            try:
+                cleaned = clean_json_response(text)
+                data = json.loads(cleaned)
+                return {
+                    'overall_rating': float(data.get('overall_rating', 8.0)),
+                    'strengths': "\n".join([f"✓ {s.lstrip('✓').strip()}" for s in data.get('strengths', [])]),
+                    'areas_for_improvement': "\n".join([f"⚠ {a.lstrip('⚠').strip()}" for a in data.get('areas_for_improvement', [])]),
+                    'recommendation': data.get('recommendation', 'Candidate demonstrates strong career readiness.')
+                }
+            except Exception as e:
+                logger.warning("Feedback JSON parsing fallback: %s", str(e))
 
-    if api_key:
-        try:
-            import google.generativeai as genai
-            genai.configure(api_key=api_key)
-            model = genai.GenerativeModel('gemini-1.5-flash')
-            response = model.generate_content(prompt)
-            clean_json = response.text.replace("```json", "").replace("```", "").strip()
-            data = json.loads(clean_json)
-            return {
-                'overall_rating': float(data.get('overall_rating', 7.8)),
-                'strengths': "\n".join([f"✓ {s}" for s in data.get('strengths', [])]),
-                'areas_for_improvement': "\n".join([f"⚠ {a}" for a in data.get('areas_for_improvement', [])]),
-                'recommendation': data.get('recommendation', 'Candidate is well-prepared for technical interviews.')
-            }
-        except Exception as e:
-            pass
-
-    # Intelligent Fallback Engine
+    # Heuristic Intelligent Fallback
     avg_score = (aptitude_score + resume_score + technical_score + communication_score) / 4.0
     rating = round(min(9.8, max(4.0, (avg_score / 10.0))), 1)
 
     strengths = []
-    if python_or_tech := (technical_score >= 75):
+    if technical_score >= 75:
         strengths.append(f"✓ Strong technical problem-solving & core conceptual knowledge in {target_role}.")
     else:
-        strengths.append(f"✓ Demonstrates solid foundational attempt in technical domain.")
+        strengths.append(f"✓ Demonstrates solid foundational effort in the technical domain.")
 
     if resume_score >= 70:
         strengths.append("✓ Resume is well-structured with clear industry skill alignment.")

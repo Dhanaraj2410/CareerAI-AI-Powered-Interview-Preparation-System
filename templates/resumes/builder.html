@@ -4,49 +4,112 @@
 
 {% block content %}
 <div class="row justify-content-center">
-    <div class="col-md-9">
+    <div class="col-lg-9">
         <div class="glass-card p-4 p-md-5">
-            <h3 class="font-heading mb-3"><i class="fa-solid fa-file-pen text-indigo me-2"></i> Professional Resume Builder</h3>
-            <p class="text-muted mb-4">Enter your details to generate a formatted ATS resume.</p>
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div>
+                    <h3 class="font-heading mb-1 text-white">
+                        <i class="fa-solid fa-file-pen text-info me-2"></i> Professional Resume Builder
+                    </h3>
+                    <p class="text-muted small mb-0 font-monospace">Fill in your background to generate an ATS-formatted resume and PDF export.</p>
+                </div>
+            </div>
 
-            <form method="post">
+            <form method="post" id="resumeForm">
                 {% csrf_token %}
                 <div class="mb-3">
-                    <label class="form-label text-muted small fw-bold">RESUME TITLE</label>
+                    <label class="form-label text-info small fw-bold font-monospace">RESUME TITLE</label>
                     {{ form.title }}
                 </div>
 
                 <div class="mb-3">
-                    <label class="form-label text-muted small fw-bold">CAREER OBJECTIVE</label>
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <label class="form-label text-info small fw-bold font-monospace mb-0">PROFESSIONAL SUMMARY / OBJECTIVE</label>
+                        <button type="button" class="btn btn-sm btn-outline-glass text-warning font-monospace" id="aiSummaryBtn">
+                            <i class="fa-solid fa-wand-magic-sparkles me-1"></i> Generate with Gemini AI
+                        </button>
+                    </div>
                     {{ form.objective }}
+                    <div id="aiSummaryStatus" class="small text-info font-monospace mt-1" style="display: none;">
+                        <span class="spinner-border spinner-border-sm me-1"></span> Generating tailored executive summary with Gemini AI...
+                    </div>
                 </div>
 
                 <div class="mb-3">
-                    <label class="form-label text-muted small fw-bold">TECHNICAL SKILLS (Comma-Separated)</label>
+                    <label class="form-label text-info small fw-bold font-monospace">TECHNICAL SKILLS (Comma-Separated)</label>
                     {{ form.skills }}
+                    <div class="form-text text-muted small font-monospace">Example: Python, Django, SQL, PostgreSQL, Docker, Git, REST APIs, Machine Learning</div>
                 </div>
 
                 <div class="mb-3">
-                    <label class="form-label text-muted small fw-bold">EDUCATION & ACADEMICS</label>
+                    <label class="form-label text-info small fw-bold font-monospace">EDUCATION & CREDENTIALS</label>
                     {{ form.education }}
+                    <div class="form-text text-muted small font-monospace">Example: B.Tech in Computer Science & Engineering - XYZ University (2020 - 2024) - CGPA: 8.8/10</div>
                 </div>
 
                 <div class="mb-3">
-                    <label class="form-label text-muted small fw-bold">KEY PROJECTS</label>
+                    <label class="form-label text-info small fw-bold font-monospace">KEY TECHNICAL PROJECTS</label>
                     {{ form.projects }}
+                    <div class="form-text text-muted small font-monospace">Example: CareerAI Platform - Architected an AI-powered interview prep platform with Django, Scikit-Learn & Gemini API.</div>
                 </div>
 
                 <div class="mb-4">
-                    <label class="form-label text-muted small fw-bold">WORK / INTERNSHIP EXPERIENCE</label>
+                    <label class="form-label text-info small fw-bold font-monospace">WORK / INTERNSHIP EXPERIENCE</label>
                     {{ form.experience }}
+                    <div class="form-text text-muted small font-monospace">Example: Software Engineering Intern at Tech Corp (6 Months) - Built 14 REST endpoints reducing response latency by 25%.</div>
                 </div>
 
-                <div class="text-end">
-                    <a href="{% url 'resume_home' %}" class="btn btn-outline-glass me-2">Cancel</a>
-                    <button type="submit" class="btn btn-primary-glow px-4 py-2">Save & Preview Resume</button>
+                <div class="d-flex justify-content-between align-items-center pt-3 border-top border-secondary">
+                    <a href="{% url 'resume_home' %}" class="btn btn-outline-glass">Cancel</a>
+                    <button type="submit" class="btn btn-ai-primary font-monospace px-4 py-2">
+                        <i class="fa-solid fa-floppy-disk me-1"></i> Save & Preview Resume &rarr;
+                    </button>
                 </div>
             </form>
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    const aiSummaryBtn = document.getElementById('aiSummaryBtn');
+    const aiSummaryStatus = document.getElementById('aiSummaryStatus');
+    const objectiveField = document.getElementById('id_objective');
+    const skillsField = document.getElementById('id_skills');
+    const expField = document.getElementById('id_experience');
+    const eduField = document.getElementById('id_education');
+
+    if (aiSummaryBtn && objectiveField) {
+        aiSummaryBtn.addEventListener('click', async function() {
+            aiSummaryStatus.style.display = 'block';
+            aiSummaryBtn.disabled = true;
+
+            try {
+                const response = await fetch("{% url 'generate_resume_summary' %}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    },
+                    body: JSON.stringify({
+                        skills: skillsField ? skillsField.value : '',
+                        experience: expField ? expField.value : '',
+                        education: eduField ? eduField.value : '',
+                    })
+                });
+
+                const data = await response.json();
+                if (data.summary) {
+                    objectiveField.value = data.summary;
+                }
+            } catch (err) {
+                console.error("AI Summary generation error:", err);
+            } finally {
+                aiSummaryStatus.style.display = 'none';
+                aiSummaryBtn.disabled = false;
+            }
+        });
+    }
+</script>
 {% endblock %}

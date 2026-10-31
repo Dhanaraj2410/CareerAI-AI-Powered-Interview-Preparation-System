@@ -32,20 +32,33 @@ body {
   min-height: 100vh;
 }
 
-/* Force All Typography to Maximum High-Contrast White/Silver */
-h1, h2, h3, h4, h5, h6, .font-heading {
-  color: #ffffff !important;
+/* High-Contrast Typography */
+[data-bs-theme="dark"] h1,
+[data-bs-theme="dark"] h2,
+[data-bs-theme="dark"] h3,
+[data-bs-theme="dark"] h4,
+[data-bs-theme="dark"] h5,
+[data-bs-theme="dark"] h6,
+[data-bs-theme="dark"] .font-heading {
+  color: #ffffff;
   font-weight: 700;
   letter-spacing: -0.3px;
 }
 
-p, span, div, td, th, li, label, legend {
-  color: #ffffff !important;
+[data-bs-theme="dark"] body {
+  color: var(--text-main);
 }
 
-.text-muted, small, .small, .text-secondary {
-  color: #cbd5e1 !important;
+[data-bs-theme="dark"] .text-muted,
+[data-bs-theme="dark"] small,
+[data-bs-theme="dark"] .small,
+[data-bs-theme="dark"] .text-secondary {
+  color: #cbd5e1;
   font-weight: 500;
+}
+
+.print-area, .print-area * {
+  color: #1e293b !important;
 }
 
 /* Rich Vibrant GUI Cards */
