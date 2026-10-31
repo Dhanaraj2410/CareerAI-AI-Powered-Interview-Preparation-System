@@ -52,6 +52,10 @@ To keep API keys and secrets secure, **never commit `.env` files to GitHub**.
 
 ---
 
+## 🏥 Health Check
+
+- `GET /health-check/` - Returns service status in JSON format
+
 ## 🚀 Quickstart Guide
 
 ### 1. Installation
