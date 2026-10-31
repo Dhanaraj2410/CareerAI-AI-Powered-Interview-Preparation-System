@@ -1,0 +1,189 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ topic.title }} - GD Lab - CareerAI{% endblock %}
+
+{% block content %}
+<div class="row mb-3 align-items-center">
+    <div class="col-md-8">
+        <a href="{% url 'gd_home' %}" class="small text-info text-decoration-none font-monospace mb-1 d-inline-block">
+            &larr; Back to GD Lab
+        </a>
+        <div class="d-flex align-items-center gap-2">
+            <span class="badge bg-info font-monospace">{{ topic.category }}</span>
+            <h3 class="font-heading mb-0 text-white">{{ topic.title }}</h3>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Left Column: Topic Context & Multi-Perspective Arguments -->
+    <div class="col-lg-5">
+        <div class="glass-card p-4 h-100 d-flex flex-column justify-content-between">
+            <div>
+                <h5 class="text-white mb-2 font-monospace pb-2 border-bottom border-secondary">
+                    <i class="fa-solid fa-circle-info me-2 text-info"></i> TOPIC BACKGROUND & CONTEXT
+                </h5>
+                <p class="text-light small mb-4" style="line-height: 1.7;">
+                    {{ topic.description }}
+                </p>
+
+                <!-- Perspectives Accordion -->
+                <div class="row g-2 mb-3">
+                    <div class="col-12">
+                        <div class="p-3 rounded" style="background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.3);">
+                            <span class="small font-monospace fw-bold text-success d-block mb-1">
+                                <i class="fa-solid fa-thumbs-up me-1"></i> SUPPORTING ARGUMENTS (PROS):
+                            </span>
+                            <div class="small text-white" style="white-space: pre-line; line-height: 1.5;">
+                                {{ topic.pro_arguments }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="p-3 rounded" style="background: rgba(244, 63, 94, 0.08); border: 1px solid rgba(244, 63, 94, 0.3);">
+                            <span class="small font-monospace fw-bold text-danger d-block mb-1">
+                                <i class="fa-solid fa-thumbs-down me-1"></i> COUNTER-ARGUMENTS (CONS):
+                            </span>
+                            <div class="small text-white" style="white-space: pre-line; line-height: 1.5;">
+                                {{ topic.con_arguments }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {% if topic.key_discussion_points %}
+                <div class="p-3 rounded" style="background: rgba(56, 189, 248, 0.08); border: 1px solid rgba(56, 189, 248, 0.3);">
+                    <span class="small font-monospace fw-bold text-info d-block mb-1">
+                        <i class="fa-solid fa-bullseye me-1"></i> KEY SUB-THEMES TO TOUCH UPON:
+                    </span>
+                    <small class="text-white font-monospace">{{ topic.key_discussion_points }}</small>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Disclaimer -->
+            <div class="mt-4 pt-2 border-top border-secondary small text-muted font-monospace">
+                <i class="fa-solid fa-circle-exclamation text-warning me-1"></i> Note: AI assesses written communication, relevance, and reasoning structure without claiming to measure physiological speaking confidence.
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Column: Candidate Discussion Input (Text or Voice) -->
+    <div class="col-lg-7">
+        <div class="glass-card p-4">
+            <form method="post" action="{% url 'gd_submit' topic_id=topic.id %}" id="gdForm">
+                {% csrf_token %}
+                <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom border-secondary flex-wrap gap-2">
+                    <span class="small font-monospace text-info fw-bold">
+                        <i class="fa-solid fa-pen-nib me-1"></i> YOUR DISCUSSION CONTRIBUTION
+                    </span>
+                    <button type="button" id="gdVoiceBtn" class="btn btn-sm btn-outline-glass text-warning font-monospace">
+                        <i class="fa-solid fa-microphone me-1"></i> Dictate with Voice
+                    </button>
+                </div>
+
+                <!-- PREP Method Guidance Box -->
+                <div class="p-2 mb-3 rounded d-flex align-items-center gap-2" style="background: rgba(30, 41, 59, 0.6); border: 1px solid var(--border-card);">
+                    <i class="fa-solid fa-lightbulb text-warning"></i>
+                    <small class="font-monospace text-muted">
+                        <strong class="text-white">Tip: Use the PREP Structure:</strong> State your <strong>Point</strong>, provide your <strong>Reason</strong>, share an <strong>Example</strong>, and restate your <strong>Point</strong>.
+                    </small>
+                </div>
+
+                <div class="mb-3 position-relative">
+                    <textarea name="response_text" id="gdResponseText" class="form-control font-monospace text-white bg-dark border-secondary p-3" rows="12" style="font-size: 0.95rem; line-height: 1.6;" placeholder="Articulate your perspective on this topic clearly... For example: 'I believe that while AI in hiring streamlines candidate pipelines, algorithmic transparency and human oversight remain essential because...'&#10;&#10;Aim for 100-300 words articulating your reasoning, practical examples, and balanced perspective." required></textarea>
+                    
+                    <div id="gdSpeechStatus" class="p-2 mt-2 rounded border border-info bg-dark" style="display:none; font-family: 'JetBrains Mono', monospace; color: #38bdf8;">
+                        <span class="pulse-indicator me-2"></span> <span id="gdSpeechStatusText">Microphone listening...</span>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="small font-monospace text-muted" id="wordCountDisplay">
+                        Word Count: 0 words
+                    </span>
+                    <button type="submit" class="btn btn-ai-primary font-monospace px-4 py-2">
+                        <i class="fa-solid fa-wand-magic-sparkles me-1"></i> Evaluate with Gemini AI &rarr;
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    const textarea = document.getElementById('gdResponseText');
+    const wordDisplay = document.getElementById('wordCountDisplay');
+
+    textarea.addEventListener('input', () => {
+        const words = textarea.value.trim().split(/\s+/).filter(w => w.length > 0);
+        wordDisplay.innerText = `Word Count: ${words.length} words`;
+    });
+
+    // Voice Dictation
+    const voiceBtn = document.getElementById('gdVoiceBtn');
+    const statusBox = document.getElementById('gdSpeechStatus');
+    const statusText = document.getElementById('gdSpeechStatusText');
+    let recognition = null;
+    let isListening = false;
+    let baseText = "";
+    let accumulated = "";
+
+    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        recognition = new SpeechRecognition();
+        recognition.continuous = true;
+        recognition.interimResults = true;
+        recognition.lang = 'en-US';
+
+        voiceBtn.addEventListener('click', () => {
+            if (!isListening) {
+                baseText = textarea.value ? textarea.value.trim() + " " : "";
+                accumulated = "";
+                recognition.start();
+                isListening = true;
+                voiceBtn.classList.remove('btn-outline-glass', 'text-warning');
+                voiceBtn.classList.add('btn-danger', 'text-white');
+                voiceBtn.innerHTML = '<i class="fa-solid fa-stop me-1"></i> Stop Dictation';
+                statusBox.style.display = 'block';
+                statusText.innerText = 'Dictating... Speak clearly into your microphone';
+            } else {
+                stopListening();
+            }
+        });
+
+        function stopListening() {
+            if (recognition && isListening) {
+                isListening = false;
+                recognition.stop();
+            }
+            voiceBtn.classList.remove('btn-danger', 'text-white');
+            voiceBtn.classList.add('btn-outline-glass', 'text-warning');
+            voiceBtn.innerHTML = '<i class="fa-solid fa-microphone me-1"></i> Dictate with Voice';
+            statusText.innerText = 'Dictation complete. Text saved.';
+            setTimeout(() => { if (!isListening) statusBox.style.display = 'none'; }, 3000);
+        }
+
+        recognition.onresult = (event) => {
+            let interim = '';
+            for (let i = event.resultIndex; i < event.results.length; ++i) {
+                if (event.results[i].isFinal) {
+                    accumulated += event.results[i][0].transcript + '. ';
+                } else {
+                    interim += event.results[i][0].transcript;
+                }
+            }
+            textarea.value = baseText + accumulated + interim;
+            const words = textarea.value.trim().split(/\s+/).filter(w => w.length > 0);
+            wordDisplay.innerText = `Word Count: ${words.length} words`;
+        };
+
+        recognition.onend = () => { if (isListening) stopListening(); };
+    } else {
+        voiceBtn.disabled = true;
+    }
+</script>
+{% endblock %}
+

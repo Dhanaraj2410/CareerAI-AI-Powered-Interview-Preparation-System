@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+
+{% block title %}Gemini API Health Check - CareerAI{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="glass-card p-4 p-md-5">
+            <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom border-secondary flex-wrap gap-2">
+                <div>
+                    <span class="badge bg-primary font-monospace small px-2 py-1 mb-1">
+                        SYSTEM DIAGNOSTICS & TELEMETRY
+                    </span>
+                    <h3 class="font-heading mb-0 text-white">
+                        <i class="fa-solid fa-bolt me-2 text-warning"></i> Google Gemini API Health Check
+                    </h3>
+                </div>
+                <button type="button" class="btn btn-sm btn-outline-glass font-monospace" onclick="location.reload();">
+                    <i class="fa-solid fa-rotate-right me-1"></i> Re-test Health
+                </button>
+            </div>
+
+            <!-- Health Status Banner -->
+            <div class="p-4 rounded-4 mb-4 text-center {% if health.status == 'healthy' %}border-success{% elif health.status == 'unconfigured' %}border-warning{% else %}border-danger{% endif %}" style="background: rgba(15, 23, 42, 0.7); border: 1px solid;">
+                <div class="d-inline-flex align-items-center justify-content-center p-3 rounded-circle mb-3" style="background: rgba(255,255,255,0.05);">
+                    {% if health.status == 'healthy' %}
+                    <i class="fa-solid fa-circle-check fa-3x text-success"></i>
+                    {% elif health.status == 'unconfigured' %}
+                    <i class="fa-solid fa-triangle-exclamation fa-3x text-warning"></i>
+                    {% else %}
+                    <i class="fa-solid fa-circle-xmark fa-3x text-danger"></i>
+                    {% endif %}
+                </div>
+
+                <h4 class="text-white text-uppercase font-monospace mb-1">
+                    API STATUS: {{ health.status }}
+                </h4>
+                <p class="text-muted small mb-0 font-monospace">
+                    {{ health.message }}
+                </p>
+            </div>
+
+            <!-- Diagnostics Matrix -->
+            <div class="row g-3 mb-4 font-monospace small">
+                <div class="col-md-6">
+                    <div class="p-3 rounded h-100" style="background: rgba(30, 41, 59, 0.6); border: 1px solid var(--border-card);">
+                        <span class="text-muted d-block mb-1">OFFICIAL SDK:</span>
+                        <strong class="text-white">google-genai (Python Client)</strong>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="p-3 rounded h-100" style="background: rgba(30, 41, 59, 0.6); border: 1px solid var(--border-card);">
+                        <span class="text-muted d-block mb-1">ACTIVE MODEL:</span>
+                        <strong class="text-info">{{ health.model }}</strong>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="p-3 rounded h-100" style="background: rgba(30, 41, 59, 0.6); border: 1px solid var(--border-card);">
+                        <span class="text-muted d-block mb-1">API KEY CONFIGURED:</span>
+                        <strong class="{% if health.configured %}text-success{% else %}text-warning{% endif %}">
+                            {% if health.configured %}YES (Secure in .env){% else %}NO (Using Smart Fallback){% endif %}
+                        </strong>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="p-3 rounded h-100" style="background: rgba(30, 41, 59, 0.6); border: 1px solid var(--border-card);">
+                        <span class="text-muted d-block mb-1">API ROUNDTRIP LATENCY:</span>
+                        <strong class="text-white">{% if health.latency_ms %}{{ health.latency_ms }} ms{% else %}N/A{% endif %}</strong>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sample Response Test -->
+            {% if health.sample_response %}
+            <div class="mb-4">
+                <span class="small font-monospace text-muted d-block mb-1">LIVE SAMPLE TEST RESPONSE:</span>
+                <pre class="p-3 rounded bg-dark border border-secondary text-success font-monospace small mb-0"><code>{{ health.sample_response }}</code></pre>
+            </div>
+            {% endif %}
+
+            <!-- Configuration Guide -->
+            <div class="p-3 rounded" style="background: rgba(56, 189, 248, 0.08); border: 1px solid rgba(56, 189, 248, 0.25);">
+                <span class="small font-monospace fw-bold text-info d-block mb-1">
+                    <i class="fa-solid fa-key me-1"></i> CONFIGURATION INSTRUCTIONS:
+                </span>
+                <p class="small text-muted font-monospace mb-0" style="line-height: 1.6;">
+                    To update your Gemini API key, edit the <code class="text-white">.env</code> file in your project root:<br>
+                    <code class="text-info">GEMINI_API_KEY=your_actual_api_key</code><br>
+                    <code class="text-info">GEMINI_MODEL=gemini-2.5-flash</code><br>
+                    Restart your Django server after updating environment variables. The API key is never exposed to the frontend or git.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

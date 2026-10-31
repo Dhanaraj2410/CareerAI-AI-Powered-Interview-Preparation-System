@@ -1,36 +1,56 @@
 # CareerAI - AI-Powered Mock Interview & Career Assessment System
 
-CareerAI is a **Python + Django + AI/ML + NLP** enterprise platform designed for candidate assessment, AI mock interviews, resume skill extraction, ATS scoring, and machine learning hiring readiness prediction.
+CareerAI is an enterprise-grade **Python + Django + Machine Learning + Google Gemini AI** platform designed for software engineering interview preparation, candidate assessment, coding practice, resume ATS scoring, and machine learning hiring readiness prediction.
+
 ---
 
-## 🌟 Key Features
+## 🌟 Complete System Architecture & Modules
 
-1. **AI Mock Interview Engine**:
-   - Role-based curriculum sections (Python Developer, Data Scientist, ML Engineer, Data Analyst, Django Developer).
-   - Per-question timer (60s / 120s / 180s) and progress tracker.
-   - Web Speech API Voice-to-Text speech recognition with real-time transcript persistence.
-   - Multi-Factor Answer Evaluator:
-     $$\text{Final Score} = (0.50 \times \text{Similarity}) + (0.25 \times \text{Keyword}) + (0.15 \times \text{Completeness}) + (0.10 \times \text{Confidence})$$
-   - 4-Tier Feedback Levels (`Excellent`, `Good`, `Average`, `Needs Improvement`).
-   - Missing technical term extraction, conceptual hints, and reference answer explanations.
-   - Section completion scorecards and **Targeted Revision Mode** for weak topics ($< 60\%$).
+### 1. 🎙️ AI Mock Interview Engine
+- **Role-Based Curriculum**: Python Developer, Data Scientist, ML Engineer, Data Analyst, Django Developer, Full Stack Developer, DevOps Engineer.
+- **Difficulty & Type Selection**: Beginner (0–1 yrs), Intermediate (1–3 yrs), Advanced (3+ yrs) across Technical Deep-Dive, HR & Behavioral, Coding & System Design, or Mixed assessments.
+- **Official Google Gen AI SDK Integration**: Real-time generation of role-specific interview questions using `google-genai`.
+- **Single-Question Sequential Flow**: Adaptive countdown timers, real-time hint requests, and progress tracking.
+- **Voice-to-Text Dictation**: Native Web Speech API integration for candidate voice responses with transcription persistence.
+- **Multi-Factor & Gemini Answer Evaluator**:
+  - Semantic relevance, keyword coverage, completeness, and sentiment confidence scoring.
+  - Generates clear **Strengths**, **Areas for Improvement**, and **Gemini Ideal Model Answers**.
+- **Targeted Revision Mode**: One-click revision launcher for questions scoring $< 60\%$.
 
-2. **Aptitude Learning & Solution Review**:
-   - Randomized question selection across Quantitative, Reasoning, Verbal, and Data Interpretation.
-   - Question-by-question solution review displaying exact option text (e.g. `60 km/h` instead of choice letter `B`).
-   - Step-by-step math calculations, formulas, and `[ 🔄 Retry Wrong Questions ]` mode.
+### 2. 💻 Coding Practice Lab (Python, SQL & DSA)
+- **Interactive Code Editor**: In-browser problem solver with Tab-indentation support.
+- **Multi-Language Domains**: Python programming, SQL relational queries, and Data Structures & Algorithms.
+- **Automated Unit Testing Engine**: Validates candidate code against automated test cases with structured pass/fail console logs.
+- **Gemini AI Code Review**: Automatic time/space complexity analysis and code cleanliness feedback.
+- **Submission History**: Complete tracking of past attempts, test results, and execution logs.
 
-3. **Resume NLP Analyzer**:
-   - PDF text extraction (`pdfplumber`/`pypdf`).
-   - SpaCy / TF-IDF skill extraction and ATS match scoring against target role requirements.
+### 3. 👥 Corporate Group Discussion (GD) Lab
+- **Dynamic Debate Generator**: Generates contemporary debate topics across Tech Trends, AI & Ethics, Corporate Culture, and Current Affairs via Gemini AI.
+- **Perspective Context**: Detailed background significance, supporting arguments (pros), counter-arguments (cons), and key sub-themes.
+- **Voice Dictation & PREP Method**: Dictate responses using Point, Reason, Example, Point structure.
+- **Communication & Argument Evaluation**: Evaluates text communication, argument relevance, reasoning clarity, and structure without claiming physiological voice analysis from text.
 
-4. **ML Candidate Performance Prediction Engine**:
-   - Random Forest Classifier model trained on candidate assessment metrics.
-   - Evaluated model accuracy ($83.00\%$), precision ($80.36\%$), recall ($88.24\%$), F1 score ($84.11\%$).
-   - Computes weighted readiness labels (`EXCELLENT PROFILE`, `HIGH READINESS`, `MODERATE READINESS`, `NEEDS IMPROVEMENT`).
+### 4. 📄 Resume Builder & Deep ATS NLP Analyzer
+- **Professional Resume Builder**: Structured form for education, skills, projects, and work experience.
+- **Gemini AI Executive Summary**: One-click generation of high-impact professional summaries.
+- **ReportLab Native PDF Export**: Generates ATS-compliant, print-ready PDF resumes directly from the browser.
+- **Deep ATS NLP Scanner**: PyMuPDF & pdfplumber extraction, TF-IDF cosine similarity, missing high-demand skill identification, and weak section recommendations.
 
-5. **Google Gemini AI Career Feedback**:
-   - Synthesizes candidate test scores and interview performance into personalized 7-day study plans.
+### 5. 🤖 24/7 AI Learning Assistant / Chatbot
+- **Technical Career Mentor**: Specialized in Python, Django, SQL, Machine Learning, Deep Learning, Generative AI, RAG, and Interview Preparation.
+- **Rich Markdown Formatting**: Real-time syntax-highlighted code blocks with copy support.
+- **Context-Aware Memory**: Retains conversation history within the session with one-click clear functionality.
+
+### 6. 🗺️ Career Roadmaps & Job Recommendations
+- **Skill-Gap Analytics**: Compares candidate's extracted profile skills against industry role benchmarks.
+- **Guided 3-Phase Progression**: Step-by-step learning stages, topic lists, and portfolio project suggestions generated by Gemini AI.
+
+### 7. 🧠 ML Candidate Performance Prediction Engine
+- **Random Forest Classifier**: Trained on candidate assessment metrics.
+- **Composite Scoring Matrix**:
+  $$\text{Final Score} = (0.20 \times \text{Aptitude}) + (0.20 \times \text{Resume}) + (0.40 \times \text{Technical}) + (0.20 \times \text{Communication})$$
+- **Model Evaluation Benchmarks**: Accuracy (83.0%), Precision (80.4%), Recall (88.2%), F1 Score (84.1%).
+- **Readiness Classification**: `EXCELLENT PROFILE`, `HIGH READINESS`, `MODERATE READINESS`, `NEEDS IMPROVEMENT`.
 
 ---
 
@@ -43,18 +63,46 @@ To keep API keys and secrets secure, **never commit `.env` files to GitHub**.
    cp .env.example .env
    ```
 
-2. Add your Google Gemini API Key in `.env`:
+2. Configure environment variables in `.env`:
    ```env
-   GEMINI_API_KEY=your_google_gemini_api_key_here
-   SECRET_KEY=your_django_secret_key
+   SECRET_KEY=your-django-secret-key-here
    DEBUG=True
+   ALLOWED_HOSTS=127.0.0.1,localhost,testserver
+
+   # MySQL Database Configuration
+   USE_MYSQL=True
+   DB_NAME=careerai_db
+   DB_USER=root
+   DB_PASSWORD=your_mysql_password
+   DB_HOST=localhost
+   DB_PORT=3306
+
+   # Google Gemini API Settings (Official google-genai SDK)
+   # Obtain key from https://aistudio.google.com/
+   GEMINI_API_KEY=your_actual_api_key
+   GEMINI_MODEL=gemini-2.5-flash
    ```
 
 ---
 
-## 🏥 Health Check
+## 🏥 Health Check & Diagnostics
 
-- `GET /health-check/` - Returns service status in JSON format
+- **JSON Endpoint**: `GET /health-check/` (or `?format=json`) returns service status and Gemini API telemetry:
+  ```json
+  {
+    "status": "ok",
+    "service": "CareerAI",
+    "gemini": {
+      "configured": true,
+      "status": "healthy",
+      "model": "gemini-2.5-flash",
+      "latency_ms": 320.5
+    }
+  }
+  ```
+- **Telemetry UI**: Navigating to `http://127.0.0.1:8000/gemini-health/` in a browser displays the real-time visual diagnostic dashboard.
+
+---
 
 ## 🚀 Quickstart Guide
 
@@ -64,45 +112,52 @@ To keep API keys and secrets secure, **never commit `.env` files to GitHub**.
 git clone https://github.com/Dhanaraj2410/CareerAI-AI-Powered-Interview-Preparation-System.git
 cd CareerAI-AI-Powered-Interview-Preparation-System
 
-# Create virtual environment
+# Create and activate virtual environment
 python -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
 
-# Install dependencies
+# Install all dependencies
 pip install -r requirements.txt
 ```
 
-### 2. Database Migrations & Seed Data
+### 2. Database Migrations & Initial Data Seeding
 
 ```bash
+# Run database migrations
 python manage.py makemigrations
 python manage.py migrate
 
-# Train ML Random Forest Model
+# Train ML Random Forest Model (creates model pickle & metrics)
 python ml_engine/train_model.py
 
-# Seed Question Banks
-python manage.py shell -c "from interview.seed_questions import seed_interview_questions; seed_interview_questions(); from aptitude.seed_questions import seed_aptitude_questions; seed_aptitude_questions()"
+# Seed Interview Question Banks, Coding Challenges & GD Topics
+python manage.py shell -c "from interview.seed_questions import seed_interview_questions; seed_interview_questions(); from aptitude.seed_questions import seed_aptitude_questions; seed_aptitude_questions(); from aptitude.seed_coding import seed_coding_questions; seed_coding_questions(); from interview.seed_gd import seed_gd_topics; seed_gd_topics()"
+
+# Seed Default Users & Profiles
+python accounts/seed_users.py
 ```
 
 ### 3. Run Development Server
 
 ```bash
-python manage.py runserver
+python manage.py runserver 127.0.0.1:8000
 ```
 
-Open `http://127.0.0.1:8000/` in your web browser.
+Open your browser at:
+- **Mock Interview**: `http://127.0.0.1:8000/interview/`
+- **Dashboard**: `http://127.0.0.1:8000/dashboard/`
+- **Coding Lab**: `http://127.0.0.1:8000/aptitude/coding/`
+- **Group Discussion**: `http://127.0.0.1:8000/interview/gd/`
+- **AI Chatbot**: `http://127.0.0.1:8000/assistant/`
 
 ---
 
-## 🛠️ Tech Stack
+## 🛠️ Complete Tech Stack
 
-- **Backend**: Python 3.14, Django 5.x ORM
-- **Machine Learning & NLP**: Scikit-Learn (Random Forest Classifier), Sentence-Transformers, TF-IDF Vectorizer, TextBlob
-- **AI Synthesis**: Google Gemini Generative AI API (`google-generativeai`)
-- **Frontend / Theme**: High-Contrast Slate & Neon Emerald GUI (`static/css/careerai-gui.css`)
-- **Database**: SQLite3 (default) / MySQL supported
-- **File Processing**: pdfplumber, pypdf for resume parsing
-
-
-
+- **Backend Framework**: Python 3.14+, Django 5.x ORM
+- **AI / LLM Integration**: Official Google Gen AI SDK (`google-genai`), Google Gemini Flash models
+- **Machine Learning**: Scikit-Learn (Random Forest Classifier, StandardScaler), Joblib, NumPy, Pandas
+- **NLP & Embeddings**: Sentence-Transformers (`all-MiniLM-L6-v2`), TF-IDF Vectorizer, TextBlob sentiment
+- **Document Processing & PDF Generation**: ReportLab Platypus, PyMuPDF (`fitz`), pdfplumber, pypdf
+- **Frontend & UI/UX**: Bootstrap 5.3.2, FontAwesome 6, Highlight.js, Marked.js, Light/Dark Mode theme switcher
+- **Database**: MySQL 8.x / SQLite3 fallback

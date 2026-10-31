@@ -1,0 +1,122 @@
+{% extends 'base.html' %}
+
+{% block title %}Group Discussion (GD) Lab - CareerAI{% endblock %}
+
+{% block content %}
+<div class="row mb-4 align-items-center">
+    <div class="col-lg-8">
+        <div class="d-flex align-items-center gap-2 mb-1">
+            <span class="badge bg-info font-monospace small px-2 py-1 rounded-pill">
+                <i class="fa-solid fa-users-line me-1"></i> CORPORATE GD SIMULATOR
+            </span>
+            <span class="text-muted small">&bull; Textual Communication, Argument Structure & Clarity Evaluation</span>
+        </div>
+        <h2 class="display-6 fw-bold mb-0 text-white">
+            <i class="fa-solid fa-comments me-2 text-info"></i> Group Discussion (GD) Practice Lab
+        </h2>
+    </div>
+    <div class="col-lg-4 text-lg-end mt-3 mt-lg-0 d-flex gap-2 justify-content-lg-end">
+        <a href="{% url 'gd_generate_new' %}?category=Tech+Trends" class="btn btn-sm btn-ai-primary font-monospace">
+            <i class="fa-solid fa-wand-magic-sparkles me-1"></i> Generate New Topic (Gemini AI)
+        </a>
+    </div>
+</div>
+
+<!-- Filters -->
+<div class="glass-card p-3 mb-4">
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
+        <div class="d-flex flex-wrap gap-2 align-items-center">
+            <span class="small font-monospace text-muted me-2"><i class="fa-solid fa-layer-group me-1"></i> CATEGORY:</span>
+            <a href="?category=all" class="btn btn-sm {% if active_category == 'all' %}btn-primary{% else %}btn-outline-glass{% endif %} font-monospace">All Topics</a>
+            <a href="?category=Tech+Trends" class="btn btn-sm {% if active_category == 'Tech Trends' %}btn-primary{% else %}btn-outline-glass{% endif %} font-monospace">Tech Trends</a>
+            <a href="?category=AI+&+Ethics" class="btn btn-sm {% if active_category == 'AI & Ethics' %}btn-primary{% else %}btn-outline-glass{% endif %} font-monospace">AI & Ethics</a>
+            <a href="?category=Corporate+Culture" class="btn btn-sm {% if active_category == 'Corporate Culture' %}btn-primary{% else %}btn-outline-glass{% endif %} font-monospace">Corporate Culture</a>
+            <a href="?category=Current+Affairs" class="btn btn-sm {% if active_category == 'Current Affairs' %}btn-primary{% else %}btn-outline-glass{% endif %} font-monospace">Current Affairs</a>
+        </div>
+    </div>
+</div>
+
+<!-- GD Topics Grid -->
+<div class="row g-3 mb-5">
+    {% for topic in topics %}
+    <div class="col-md-6 col-lg-6">
+        <div class="glass-card h-100 p-4 d-flex flex-column justify-content-between">
+            <div>
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="badge bg-info font-monospace small">{{ topic.get_category_display }}</span>
+                    <small class="text-muted font-monospace">{{ topic.created_at|date:"M d, Y" }}</small>
+                </div>
+                <h5 class="text-white fw-bold mb-2">{{ topic.title }}</h5>
+                <p class="text-muted small mb-3" style="line-height: 1.6;">
+                    {{ topic.description|truncatewords:28 }}
+                </p>
+            </div>
+
+            <div class="pt-3 border-top border-secondary d-flex justify-content-between align-items-center">
+                <span class="small font-monospace text-muted">
+                    <i class="fa-solid fa-chart-simple me-1 text-success"></i> {{ topic.attempts.count }} Practice Attempts
+                </span>
+                <a href="{% url 'gd_detail' topic_id=topic.id %}" class="btn btn-sm btn-ai-primary font-monospace px-3">
+                    Enter Discussion &rarr;
+                </a>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12 text-center py-5 glass-card">
+        <i class="fa-solid fa-users-slash fa-3x text-muted mb-3"></i>
+        <h5 class="text-white">No discussion topics found in this category.</h5>
+        <a href="{% url 'gd_generate_new' %}" class="btn btn-sm btn-ai-primary mt-2">
+            Generate Topic with Gemini AI
+        </a>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- User's Previous GD Sessions -->
+{% if user_sessions %}
+<div class="glass-card p-4">
+    <h4 class="font-heading mb-3 text-white font-monospace">
+        <i class="fa-solid fa-clock-rotate-left me-2 text-info"></i> Your Previous GD Practice Sessions
+    </h4>
+    <div class="table-responsive">
+        <table class="table table-dark table-hover align-middle mb-0" style="background: transparent;">
+            <thead>
+                <tr class="small font-monospace text-muted border-secondary">
+                    <th>TOPIC</th>
+                    <th>SCORE</th>
+                    <th>RELEVANCE</th>
+                    <th>CLARITY</th>
+                    <th>DATE</th>
+                    <th class="text-end">ACTION</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for gs in user_sessions|slice:":6" %}
+                <tr class="border-secondary font-monospace">
+                    <td>
+                        <strong class="text-white">{{ gs.topic.title|truncatechars:45 }}</strong>
+                        <div class="text-muted small">{{ gs.topic.category }}</div>
+                    </td>
+                    <td>
+                        <span class="badge {% if gs.overall_score >= 75 %}bg-success{% elif gs.overall_score >= 55 %}bg-warning text-dark{% else %}bg-danger{% endif %} fs-6">
+                            {{ gs.overall_score }}%
+                        </span>
+                    </td>
+                    <td class="text-info">{{ gs.relevance_score }}%</td>
+                    <td class="text-success">{{ gs.clarity_score }}%</td>
+                    <td class="small text-muted">{{ gs.created_at|date:"M d, Y" }}</td>
+                    <td class="text-end">
+                        <a href="{% url 'gd_result' session_id=gs.id %}" class="btn btn-sm btn-outline-glass px-2 py-1">
+                            Feedback
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+

@@ -1,0 +1,287 @@
+{% extends 'base.html' %}
+
+{% block title %}AI Learning Assistant & Technical Mentor - CareerAI{% endblock %}
+
+{% block extra_css %}
+<style>
+    .chat-container {
+        height: 60vh;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        padding: 1.25rem;
+        background: rgba(15, 23, 42, 0.6);
+        border: 1px solid var(--border-card);
+        border-radius: 16px;
+    }
+
+    .chat-bubble {
+        max-width: 82%;
+        padding: 0.9rem 1.25rem;
+        border-radius: 16px;
+        line-height: 1.6;
+        word-wrap: break-word;
+    }
+
+    .chat-bubble.user {
+        align-self: flex-end;
+        background: linear-gradient(135deg, #2563eb, #0284c7);
+        color: #ffffff;
+        border-bottom-right-radius: 4px;
+    }
+
+    .chat-bubble.assistant {
+        align-self: flex-start;
+        background: #1e293b;
+        color: #f1f5f9;
+        border: 1px solid #334155;
+        border-bottom-left-radius: 4px;
+    }
+
+    .chat-bubble pre {
+        background: #0b0f19 !important;
+        border: 1px solid #334155;
+        border-radius: 8px;
+        padding: 0.75rem 1rem;
+        margin: 0.5rem 0;
+        overflow-x: auto;
+    }
+
+    .chat-bubble code {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.9em;
+    }
+
+    .prompt-chip {
+        cursor: pointer;
+        transition: all 0.2s ease;
+        background: rgba(56, 189, 248, 0.08);
+        border: 1px solid rgba(56, 189, 248, 0.25);
+        color: #38bdf8;
+        font-size: 0.82rem;
+        border-radius: 20px;
+        padding: 0.35rem 0.85rem;
+    }
+
+    .prompt-chip:hover {
+        background: rgba(56, 189, 248, 0.2);
+        transform: translateY(-1px);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <!-- Header -->
+        <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+            <div>
+                <div class="d-flex align-items-center gap-2 mb-1">
+                    <span class="badge {% if gemini_active %}bg-success{% else %}bg-secondary{% endif %} font-monospace small px-2 py-1 rounded-pill">
+                        <i class="fa-solid fa-bolt me-1"></i> {% if gemini_active %}Gemini AI Active{% else %}Offline Mode{% endif %}
+                    </span>
+                    <span class="text-muted small">&bull; Python, SQL, ML/DL, GenAI, Django & Interview Mentor</span>
+                </div>
+                <h3 class="font-heading mb-0 text-white">
+                    <i class="fa-solid fa-robot me-2 text-primary"></i> CareerAI Learning Assistant
+                </h3>
+            </div>
+            <div class="d-flex gap-2">
+                <button type="button" class="btn btn-sm btn-outline-glass" id="clearChatBtn" title="Clear Conversation">
+                    <i class="fa-solid fa-trash-can me-1 text-danger"></i> Clear Chat
+                </button>
+            </div>
+        </div>
+
+        <!-- Quick Prompt Chips -->
+        <div class="d-flex flex-wrap gap-2 mb-3 align-items-center">
+            <span class="small font-monospace text-muted me-1"><i class="fa-solid fa-lightbulb text-warning me-1"></i> Ask:</span>
+            <span class="prompt-chip" data-prompt="Explain the difference between Python's asyncio and threading with code examples.">Python Async vs Threading</span>
+            <span class="prompt-chip" data-prompt="How do I optimize Django database queries to avoid the N+1 problem?">Django N+1 Optimization</span>
+            <span class="prompt-chip" data-prompt="Explain Retrieval-Augmented Generation (RAG) and how vector embeddings work.">RAG Architecture & Embeddings</span>
+            <span class="prompt-chip" data-prompt="How do SQL Window Functions like DENSE_RANK() and ROW_NUMBER() work?">SQL Window Functions</span>
+            <span class="prompt-chip" data-prompt="Mock interview me on Machine Learning model overfitting vs underfitting.">ML Overfitting Question</span>
+        </div>
+
+        <!-- Main Chat Box -->
+        <div class="glass-card p-3 p-md-4 mb-3">
+            <div class="chat-container" id="chatBox">
+                <!-- Welcome Bubble -->
+                <div class="chat-bubble assistant">
+                    <div class="d-flex align-items-center gap-2 mb-1">
+                        <i class="fa-solid fa-brain text-info"></i>
+                        <strong class="font-monospace text-info small">CareerAI Mentor</strong>
+                    </div>
+                    <div>
+                        Hello <strong>{{ user.first_name|default:user.username }}</strong>! I am your AI Technical Career Mentor. Ask me any technical questions on <strong>Python, Django, SQL, Machine Learning, Deep Learning, Generative AI, RAG, or Interview Preparation</strong>, and I will provide in-depth explanations and code snippets.
+                    </div>
+                </div>
+
+                <!-- Existing Session History -->
+                {% for turn in chat_history %}
+                <div class="chat-bubble {% if turn.role == 'user' %}user{% else %}assistant{% endif %}">
+                    {% if turn.role == 'model' %}
+                    <div class="d-flex align-items-center gap-2 mb-1">
+                        <i class="fa-solid fa-brain text-info"></i>
+                        <strong class="font-monospace text-info small">CareerAI Mentor</strong>
+                    </div>
+                    {% endif %}
+                    <div class="rendered-markdown" data-raw="{{ turn.text|escapejs }}">
+                        {{ turn.text|linebreaks }}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Loading Indicator -->
+            <div id="aiLoadingIndicator" class="mt-2 text-info small font-monospace" style="display: none;">
+                <span class="spinner-border spinner-border-sm me-2"></span> Thinking and generating response with Gemini AI...
+            </div>
+
+            <!-- Input Form -->
+            <form id="chatForm" class="mt-3">
+                <div class="input-group">
+                    <textarea id="chatInput" class="form-control font-monospace text-white bg-dark border-secondary p-3" rows="2" placeholder="Ask a technical or interview question... (Press Enter to send, Shift+Enter for newline)" required></textarea>
+                    <button class="btn btn-ai-primary px-4 font-monospace" type="submit" id="sendBtn">
+                        <i class="fa-solid fa-paper-plane me-1"></i> Send
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    const chatBox = document.getElementById('chatBox');
+    const chatForm = document.getElementById('chatForm');
+    const chatInput = document.getElementById('chatInput');
+    const loadingIndicator = document.getElementById('aiLoadingIndicator');
+    const sendBtn = document.getElementById('sendBtn');
+    const clearBtn = document.getElementById('clearChatBtn');
+
+    // Auto-scroll to bottom of chat
+    function scrollToBottom() {
+        chatBox.scrollTop = chatBox.scrollHeight;
+    }
+    scrollToBottom();
+
+    // Render marked for any existing elements
+    document.querySelectorAll('.rendered-markdown').forEach(el => {
+        const raw = el.getAttribute('data-raw');
+        if (raw && typeof marked !== 'undefined') {
+            try {
+                el.innerHTML = marked.parse(raw);
+                el.querySelectorAll('pre code').forEach((block) => {
+                    if (typeof hljs !== 'undefined') hljs.highlightElement(block);
+                });
+            } catch (e) {}
+        }
+    });
+
+    // Enter to send (Shift+Enter for newline)
+    chatInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            chatForm.dispatchEvent(new Event('submit'));
+        }
+    });
+
+    // Prompt Chips Click
+    document.querySelectorAll('.prompt-chip').forEach(chip => {
+        chip.addEventListener('click', () => {
+            chatInput.value = chip.getAttribute('data-prompt');
+            chatInput.focus();
+        });
+    });
+
+    // Submit Chat
+    chatForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const message = chatInput.value.trim();
+        if (!message) return;
+
+        // Append user bubble
+        appendBubble('user', message, false);
+        chatInput.value = '';
+        scrollToBottom();
+
+        loadingIndicator.style.display = 'block';
+        sendBtn.disabled = true;
+
+        try {
+            const response = await fetch("{% url 'api_assistant_send' %}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify({ message: message })
+            });
+
+            const data = await response.json();
+            loadingIndicator.style.display = 'none';
+            sendBtn.disabled = false;
+
+            if (data.status === 'success') {
+                appendBubble('assistant', data.reply, true);
+            } else {
+                appendBubble('assistant', `⚠️ Error: ${data.error || 'Failed to generate response'}`, false);
+            }
+        } catch (err) {
+            loadingIndicator.style.display = 'none';
+            sendBtn.disabled = false;
+            appendBubble('assistant', '⚠️ Network error communicating with server.', false);
+        }
+        scrollToBottom();
+    });
+
+    function appendBubble(role, text, isMarkdown) {
+        const bubble = document.createElement('div');
+        bubble.className = `chat-bubble ${role}`;
+
+        if (role === 'assistant') {
+            const header = document.createElement('div');
+            header.className = 'd-flex align-items-center gap-2 mb-1';
+            header.innerHTML = '<i class="fa-solid fa-brain text-info"></i><strong class="font-monospace text-info small">CareerAI Mentor</strong>';
+            bubble.appendChild(header);
+        }
+
+        const content = document.createElement('div');
+        if (isMarkdown && typeof marked !== 'undefined') {
+            content.innerHTML = marked.parse(text);
+            content.querySelectorAll('pre code').forEach((block) => {
+                if (typeof hljs !== 'undefined') hljs.highlightElement(block);
+            });
+        } else {
+            content.innerText = text;
+        }
+        bubble.appendChild(content);
+        chatBox.appendChild(bubble);
+        scrollToBottom();
+    }
+
+    // Clear Chat
+    clearBtn.addEventListener('click', async function() {
+        if (!confirm("Clear conversation history?")) return;
+        try {
+            await fetch("{% url 'api_assistant_clear' %}", {
+                method: 'POST',
+                headers: { 'X-CSRFToken': '{{ csrf_token }}' }
+            });
+            chatBox.innerHTML = `
+                <div class="chat-bubble assistant">
+                    <div class="d-flex align-items-center gap-2 mb-1">
+                        <i class="fa-solid fa-brain text-info"></i>
+                        <strong class="font-monospace text-info small">CareerAI Mentor</strong>
+                    </div>
+                    <div>Conversation cleared. What would you like to learn next?</div>
+                </div>
+            `;
+        } catch (e) {}
+    });
+</script>
+{% endblock %}
+

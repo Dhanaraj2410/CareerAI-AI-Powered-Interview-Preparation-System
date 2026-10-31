@@ -19,7 +19,7 @@ urlpatterns = [
     path('recommendations/', views.job_recommendations_view, name='job_recommendations'),
 
     # Admin / System Gemini API Health Check
-    path('health-check/', views.gemini_health_view, name='gemini_health'),
+    path('gemini-diagnostics/', views.gemini_health_view, name='gemini_health_diagnostics'),
 
     # REST API endpoints for React Frontend
     path('api/auth/login', api_views.api_login),

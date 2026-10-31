@@ -1,0 +1,190 @@
+{% extends 'base.html' %}
+
+{% block title %}Career Roadmaps & Job Recommendations - CareerAI{% endblock %}
+
+{% block content %}
+<div class="row mb-4 align-items-center">
+    <div class="col-lg-8">
+        <div class="d-flex align-items-center gap-2 mb-1">
+            <span class="badge bg-success font-monospace small px-2 py-1 rounded-pill">
+                <i class="fa-solid fa-compass me-1"></i> CAREER INTELLIGENCE
+            </span>
+            <span class="text-muted small">&bull; Skill Gap Analytics & Guided Engineering Roadmaps</span>
+        </div>
+        <h2 class="display-6 fw-bold mb-0 text-white">
+            <i class="fa-solid fa-route me-2 text-success"></i> Job Recommendations & Career Roadmaps
+        </h2>
+    </div>
+    <div class="col-lg-4 text-lg-end mt-3 mt-lg-0">
+        <span class="small font-monospace text-muted">
+            Target Role: <strong class="text-info">{{ profile.target_role }}</strong>
+        </span>
+    </div>
+</div>
+
+<!-- Extracted Skills Overview Card -->
+<div class="glass-card p-4 mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
+        <span class="small font-monospace fw-bold text-info">
+            <i class="fa-solid fa-tags me-1"></i> DETECTED SKILLS FROM YOUR PROFILE & RESUME:
+        </span>
+        <a href="{% url 'resume_analyzer' %}" class="small text-muted font-monospace text-decoration-none">
+            Update Resume Skills &rarr;
+        </a>
+    </div>
+    <div class="d-flex flex-wrap gap-2">
+        {% for s in user_skills %}
+            <span class="badge-skill-found px-3 py-1">{{ s }}</span>
+        {% empty %}
+            <span class="text-muted small">No specific skills parsed yet. Upload your resume to detect technical skills.</span>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Recommended Roles Match Matrix -->
+<div class="row g-3 mb-4">
+    {% for rec in recommendations %}
+    <div class="col-md-6 col-lg-4">
+        <div class="glass-card p-3 h-100 d-flex flex-column justify-content-between {% if rec.role == selected_role %}border-primary{% endif %}" style="{% if rec.role == selected_role %}box-shadow: 0 0 15px rgba(56, 189, 248, 0.25);{% endif %}">
+            <div>
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="small font-monospace text-muted">MATCH ACCURACY</span>
+                    <span class="badge {% if rec.match_pct >= 75 %}bg-success{% elif rec.match_pct >= 50 %}bg-warning text-dark{% else %}bg-secondary{% endif %} font-monospace fs-6">
+                        {{ rec.match_pct }}%
+                    </span>
+                </div>
+                <h5 class="text-white fw-bold mb-1">
+                    {{ rec.role }}
+                    {% if rec.is_target %}
+                    <span class="badge bg-primary small ms-1 font-monospace">Target</span>
+                    {% endif %}
+                </h5>
+
+                <div class="progress progress-dark my-2" style="height: 6px;">
+                    <div class="progress-bar {% if rec.match_pct >= 75 %}bg-success{% else %}bg-primary{% endif %}" style="width: {{ rec.match_pct }}%;"></div>
+                </div>
+
+                <!-- Missing high-priority skills -->
+                {% if rec.missing_skills %}
+                <div class="my-2 small font-monospace">
+                    <span class="text-warning d-block small mb-1">SKILLS TO ACQUIRE:</span>
+                    <div class="d-flex flex-wrap gap-1">
+                        {% for ms in rec.missing_skills|slice:":3" %}
+                        <span class="badge bg-secondary small">{{ ms }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% else %}
+                <div class="my-2 small text-success font-monospace">
+                    <i class="fa-solid fa-circle-check me-1"></i> Core benchmark requirements met!
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="pt-3 border-top border-secondary mt-3">
+                <a href="?role={{ rec.role|urlencode }}" class="btn btn-sm {% if rec.role == selected_role %}btn-ai-primary{% else %}btn-outline-glass{% endif %} w-100 font-monospace">
+                    {% if rec.role == selected_role %}Active Roadmap{% else %}View Roadmap &rarr;{% endif %}
+                </a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Active Career Development Roadmap -->
+<div class="glass-card p-4 p-md-5">
+    <div class="d-flex justify-content-between align-items-center mb-3 pb-3 border-bottom border-secondary flex-wrap gap-2">
+        <div>
+            <span class="badge bg-success font-monospace small px-2 py-1 mb-1">
+                STEP-BY-STEP LEARNING ROADMAP
+            </span>
+            <h3 class="font-heading mb-0 text-white">{{ roadmap.role }}</h3>
+        </div>
+        <a href="{% url 'interview_home' %}" class="btn btn-sm btn-ai-primary font-monospace">
+            Practice {{ roadmap.role }} Mock Interview &rarr;
+        </a>
+    </div>
+
+    <p class="text-light small mb-4" style="line-height: 1.7;">
+        {{ roadmap.overview }}
+    </p>
+
+    <!-- Prerequisite & High-Priority Skills -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-6">
+            <div class="p-3 rounded" style="background: rgba(30, 41, 59, 0.6); border: 1px solid var(--border-card);">
+                <span class="small font-monospace text-info fw-bold d-block mb-2">
+                    <i class="fa-solid fa-circle-check me-1"></i> ESSENTIAL FOUNDATIONS:
+                </span>
+                <div class="d-flex flex-wrap gap-1">
+                    {% for p in roadmap.skill_prerequisites %}
+                    <span class="badge bg-dark border border-secondary font-monospace">{{ p }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="p-3 rounded" style="background: rgba(30, 41, 59, 0.6); border: 1px solid var(--border-card);">
+                <span class="small font-monospace text-warning fw-bold d-block mb-2">
+                    <i class="fa-solid fa-arrow-trend-up me-1"></i> HIGH-DEMAND SKILLS TO LEARN:
+                </span>
+                <div class="d-flex flex-wrap gap-1">
+                    {% for skl in roadmap.skills_to_learn %}
+                    <span class="badge bg-secondary font-monospace">{{ skl }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Roadmap Stages -->
+    <h5 class="text-white mb-3 font-monospace">
+        <i class="fa-solid fa-timeline me-2 text-primary"></i> PROGRESSION MILESTONES
+    </h5>
+
+    <div class="d-flex flex-column gap-3 mb-4">
+        {% for stage in roadmap.roadmap_stages %}
+        <div class="p-3 rounded" style="background: rgba(15, 23, 42, 0.7); border-left: 4px solid var(--accent-cyan); border: 1px solid var(--border-card);">
+            <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
+                <strong class="text-white font-monospace fs-6">{{ stage.stage }}</strong>
+                <span class="badge bg-info text-dark font-monospace">{{ stage.duration }}</span>
+            </div>
+
+            <div class="row g-2 small font-monospace">
+                <div class="col-md-6">
+                    <span class="text-muted d-block mb-1">Key Topics to Master:</span>
+                    <ul class="text-white mb-0 ps-3">
+                        {% for t in stage.topics %}
+                        <li>{{ t }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <div class="col-md-6">
+                    <span class="text-muted d-block mb-1">Portfolio Project Milestone:</span>
+                    <ul class="text-info mb-0 ps-3">
+                        {% for proj in stage.recommended_projects %}
+                        <li>{{ proj }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Interview Focus Areas -->
+    {% if roadmap.interview_focus_areas %}
+    <div class="p-3 rounded" style="background: rgba(56, 189, 248, 0.08); border: 1px solid rgba(56, 189, 248, 0.25);">
+        <span class="small font-monospace text-info fw-bold d-block mb-2">
+            <i class="fa-solid fa-bullseye me-1"></i> CRITICAL INTERVIEW FOCUS AREAS:
+        </span>
+        <div class="d-flex flex-wrap gap-2">
+            {% for fa in roadmap.interview_focus_areas %}
+            <span class="badge bg-primary font-monospace">{{ fa }}</span>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+

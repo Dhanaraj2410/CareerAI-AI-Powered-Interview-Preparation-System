@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+
+{% block title %}Coding Submissions History - CareerAI{% endblock %}
+
+{% block content %}
+<div class="row mb-4 align-items-center">
+    <div class="col-md-8">
+        <a href="{% url 'coding_home' %}" class="small text-info text-decoration-none font-monospace mb-1 d-inline-block">
+            &larr; Back to Coding Lab
+        </a>
+        <h2 class="display-6 fw-bold mb-0 text-white">
+            <i class="fa-solid fa-clock-rotate-left me-2 text-primary"></i> Coding Submissions History
+        </h2>
+    </div>
+    <div class="col-md-4 text-md-end mt-2 mt-md-0">
+        <a href="{% url 'coding_home' %}" class="btn btn-sm btn-ai-primary font-monospace">
+            Practice More Challenges &rarr;
+        </a>
+    </div>
+</div>
+
+<div class="glass-card p-4">
+    {% if submissions %}
+    <div class="table-responsive">
+        <table class="table table-dark table-hover align-middle mb-0" style="background: transparent;">
+            <thead>
+                <tr class="small font-monospace text-muted border-secondary">
+                    <th>DATE & TIME</th>
+                    <th>CHALLENGE</th>
+                    <th>CATEGORY</th>
+                    <th>STATUS</th>
+                    <th>TESTS PASSED</th>
+                    <th class="text-end">ACTION</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for sub in submissions %}
+                <tr class="border-secondary font-monospace">
+                    <td class="small text-muted">{{ sub.created_at|date:"M d, Y &bull; H:i" }}</td>
+                    <td>
+                        <strong class="text-white">{{ sub.question.title }}</strong>
+                    </td>
+                    <td>
+                        <span class="badge {% if sub.question.category == 'python' %}bg-primary{% elif sub.question.category == 'sql' %}bg-info{% else %}bg-warning text-dark{% endif %}">
+                            {{ sub.question.get_category_display }}
+                        </span>
+                    </td>
+                    <td>
+                        <span class="badge {% if sub.status == 'Passed' %}bg-success{% else %}bg-danger{% endif %}">
+                            {{ sub.status }}
+                        </span>
+                    </td>
+                    <td>{{ sub.passed_tests }} / {{ sub.total_tests }}</td>
+                    <td class="text-end">
+                        <a href="{% url 'coding_detail' slug=sub.question.slug %}" class="btn btn-sm btn-outline-glass px-2 py-1">
+                            Review / Retry
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="text-center py-5 text-muted">
+        <i class="fa-solid fa-code fa-3x mb-3 text-secondary"></i>
+        <p class="mb-2">No coding submissions recorded yet.</p>
+        <a href="{% url 'coding_home' %}" class="btn btn-sm btn-ai-primary">
+            Explore Coding Challenges
+        </a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+

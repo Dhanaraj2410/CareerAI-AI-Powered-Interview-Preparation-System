@@ -1,0 +1,119 @@
+{% extends 'base.html' %}
+
+{% block title %}GD Assessment Report - CareerAI{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-9">
+        <div class="glass-card p-4 p-md-5">
+            <!-- Header with GD Score Gauge -->
+            <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom border-secondary flex-wrap gap-2">
+                <div>
+                    <span class="badge bg-info font-monospace small px-2 py-1 mb-1">
+                        {{ session.topic.category }} // GD EVALUATION REPORT
+                    </span>
+                    <h3 class="font-heading mb-0 text-white">{{ session.topic.title }}</h3>
+                </div>
+                <div class="text-center">
+                    <div class="display-4 fw-extrabold" style="color: {% if session.overall_score >= 75 %}#34d399{% elif session.overall_score >= 55 %}#fbbf24{% else %}#f43f5e{% endif %};">
+                        {{ session.overall_score }}%
+                    </div>
+                    <span class="badge bg-primary font-monospace small">GD COMPOSITE SCORE</span>
+                </div>
+            </div>
+
+            <!-- Evaluation Dimensions Grid -->
+            <div class="row g-3 mb-4 text-center font-monospace small">
+                <div class="col-4">
+                    <div class="p-3 rounded" style="background: rgba(30, 41, 59, 0.6); border: 1px solid var(--border-card);">
+                        <span class="text-muted d-block">ARGUMENT RELEVANCE</span>
+                        <strong class="fs-4 text-info">{{ session.relevance_score }}%</strong>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="p-3 rounded" style="background: rgba(30, 41, 59, 0.6); border: 1px solid var(--border-card);">
+                        <span class="text-muted d-block">COMMUNICATION CLARITY</span>
+                        <strong class="fs-4 text-success">{{ session.clarity_score }}%</strong>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="p-3 rounded" style="background: rgba(30, 41, 59, 0.6); border: 1px solid var(--border-card);">
+                        <span class="text-muted d-block">REASONING STRUCTURE</span>
+                        <strong class="fs-4 text-warning">{{ session.structure_score }}%</strong>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Candidate Response Echo -->
+            <div class="p-3 rounded mb-4" style="background: rgba(30, 41, 59, 0.6); border: 1px solid var(--border-card);">
+                <span class="small font-monospace text-muted d-block mb-1">YOUR SUBMITTED ARGUMENT:</span>
+                <p class="mb-0 text-white font-monospace small" style="white-space: pre-line; line-height: 1.6;">"{{ session.candidate_response }}"</p>
+            </div>
+
+            <!-- Strengths & Improvement Tips 2-Column Grid -->
+            <div class="row g-3 mb-4">
+                <div class="col-md-6">
+                    <div class="p-3 rounded h-100" style="background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.3);">
+                        <span class="small font-monospace fw-bold text-success d-block mb-2">
+                            <i class="fa-solid fa-circle-check me-1"></i> WHAT YOU DID WELL:
+                        </span>
+                        <ul class="list-unstyled mb-0 small text-white d-flex flex-column gap-1">
+                            {% for st in strengths_list %}
+                            <li>{{ st }}</li>
+                            {% empty %}
+                            <li>✓ Articulated a clear point of view relevant to the topic.</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="p-3 rounded h-100" style="background: rgba(244, 63, 94, 0.08); border: 1px solid rgba(244, 63, 94, 0.3);">
+                        <span class="small font-monospace fw-bold text-danger d-block mb-2">
+                            <i class="fa-solid fa-triangle-exclamation me-1"></i> RECOMMENDED IMPROVEMENTS:
+                        </span>
+                        <ul class="list-unstyled mb-0 small text-white d-flex flex-column gap-1">
+                            {% for imp in improvements_list %}
+                            <li>{{ imp }}</li>
+                            {% empty %}
+                            <li>⚠ Back assertions with industry metrics or concrete case studies.</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- AI Summary Feedback -->
+            {% if session.feedback %}
+            <div class="p-3 rounded mb-4" style="background: rgba(56, 189, 248, 0.08); border: 1px solid rgba(56, 189, 248, 0.3);">
+                <span class="small font-monospace fw-bold text-info d-block mb-1">
+                    <i class="fa-solid fa-wand-magic-sparkles me-1"></i> AI PANEL FEEDBACK:
+                </span>
+                <p class="mb-0 text-white small" style="line-height: 1.6;">{{ session.feedback }}</p>
+            </div>
+            {% endif %}
+
+            <!-- Key Takeaway -->
+            {% if session.key_takeaway %}
+            <div class="p-3 rounded mb-4 d-flex align-items-center gap-3" style="background: rgba(251, 191, 36, 0.08); border: 1px solid rgba(251, 191, 36, 0.3);">
+                <i class="fa-solid fa-lightbulb text-warning fs-4"></i>
+                <div>
+                    <span class="small font-monospace fw-bold text-warning d-block">KEY TAKEAWAY FOR NEXT GD:</span>
+                    <small class="text-white font-monospace">{{ session.key_takeaway }}</small>
+                </div>
+            </div>
+            {% endif %}
+
+            <div class="d-flex justify-content-between align-items-center pt-3 border-top border-secondary flex-wrap gap-2">
+                <a href="{% url 'gd_detail' topic_id=session.topic.id %}" class="btn btn-outline-glass">
+                    <i class="fa-solid fa-rotate-left me-1"></i> Re-Attempt Topic
+                </a>
+                <a href="{% url 'gd_home' %}" class="btn btn-ai-primary px-4">
+                    Explore Other Topics &rarr;
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
