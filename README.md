@@ -2,6 +2,8 @@
 
 CareerAI is an enterprise-grade **Python + Django + Machine Learning + Google Gemini AI** platform designed for software engineering interview preparation, candidate assessment, coding practice, resume ATS scoring, and machine learning hiring readiness prediction.
 
+**Modules:** Accounts • AI Mock Interview • Aptitude Assessment • Resume NLP & ATS • ML Readiness Predictor • AI Career Feedback
+
 ---
 
 ## 🌟 Complete System Architecture & Modules
