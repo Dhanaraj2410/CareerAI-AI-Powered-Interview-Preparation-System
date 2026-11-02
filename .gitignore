@@ -25,6 +25,7 @@ ml_engine/models/*.pkl
 # IDE & System Files
 .vscode/
 .idea/
+.kilo/
 .DS_Store
 Thumbs.db
 
