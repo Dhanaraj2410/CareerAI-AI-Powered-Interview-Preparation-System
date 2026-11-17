@@ -58,6 +58,11 @@ CareerAI is an enterprise-grade **Python + Django + Machine Learning + Google Ge
 
 ## 🔒 Security & Environment Setup
 
+The application defaults to SQLite and development mode for a safe first run.
+Production startup requires an explicit `SECRET_KEY`; database credentials and
+browser origins are read only from environment variables. The resume API also
+requires authentication and scopes records to the signed-in user.
+
 To keep API keys and secrets secure, **never commit `.env` files to GitHub**.
 
 1. Copy `.env.example` to `.env`:
