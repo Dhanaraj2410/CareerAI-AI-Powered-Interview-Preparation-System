@@ -23,11 +23,12 @@ def health_check(request):
 
     from careerai.gemini_service import check_gemini_health
     health = check_gemini_health()
+    service_status = 'ok' if health.get('status') in {'healthy', 'unconfigured'} else 'degraded'
     return JsonResponse({
-        'status': 'ok',
+        'status': service_status,
         'service': 'CareerAI',
         'gemini': health
-    })
+    }, status=200 if service_status == 'ok' else 503)
 
 
 urlpatterns = [

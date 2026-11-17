@@ -1,6 +1,7 @@
 from django.test import RequestFactory, SimpleTestCase, override_settings
 
 from .middleware import CorsMiddleware
+from unittest.mock import patch
 
 
 class CorsMiddlewareTests(SimpleTestCase):
@@ -28,3 +29,13 @@ class CorsMiddlewareTests(SimpleTestCase):
         request = self.factory.get('/', HTTP_ORIGIN='https://app.example.com')
         result = middleware(request)
         self.assertEqual(result['Access-Control-Allow-Origin'], 'https://app.example.com')
+
+
+class HealthCheckTests(SimpleTestCase):
+    @patch('careerai.gemini_service.check_gemini_health', return_value={
+        'status': 'error', 'configured': True, 'model': 'test',
+    })
+    def test_health_endpoint_reports_degraded_dependency(self, _health):
+        response = self.client.get('/health-check/?format=json')
+        self.assertEqual(response.status_code, 503)
+        self.assertEqual(response.json()['status'], 'degraded')
