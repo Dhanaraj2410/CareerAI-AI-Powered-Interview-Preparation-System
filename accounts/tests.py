@@ -34,3 +34,12 @@ class RegistrationTests(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertFalse(User.objects.filter(username='candidate').exists())
+
+    def test_api_registration_rejects_duplicate_email(self):
+        User.objects.create_user(username='existing', email='candidate@example.com', password='SafePassword123!')
+        response = self.client.post(
+            reverse('api_register'),
+            data='{"email":"candidate@example.com","password":"SafePassword123!"}',
+            content_type='application/json',
+        )
+        self.assertEqual(response.status_code, 409)
