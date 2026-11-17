@@ -11,8 +11,8 @@ urlpatterns = [
     path('analyzer/', views.resume_analyzer, name='resume_analyzer'),
 
     # REST API endpoints for React Frontend
-    path('api/resume', api_views.api_resume_list),
-    path('api/resume/analyze', api_views.api_resume_analyze),
-    path('api/resume/<int:pk>', api_views.api_resume_detail),
-    path('api/resume/<int:pk>/duplicate', api_views.api_resume_duplicate),
+    path('api/resume', api_views.api_resume_list, name='api_resume_list'),
+    path('api/resume/analyze', api_views.api_resume_analyze, name='api_resume_analyze'),
+    path('api/resume/<int:pk>', api_views.api_resume_detail, name='api_resume_detail'),
+    path('api/resume/<int:pk>/duplicate', api_views.api_resume_duplicate, name='api_resume_duplicate'),
 ]

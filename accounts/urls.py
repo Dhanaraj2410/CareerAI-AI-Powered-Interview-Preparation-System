@@ -24,7 +24,7 @@ urlpatterns = [
     # REST API endpoints for React Frontend
     path('api/auth/login', api_views.api_login),
     path('api/auth/register/send-otp', api_views.api_send_register_otp),
-    path('api/auth/register', api_views.api_register),
+    path('api/auth/register', api_views.api_register, name='api_register'),
     path('api/auth/forgot-password/send-otp', api_views.api_send_forgot_otp),
     path('api/auth/forgot-password/reset', api_views.api_reset_password),
     path('api/auth/logout', api_views.api_logout),
