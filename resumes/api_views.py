@@ -11,6 +11,12 @@ from django.views.decorators.csrf import csrf_exempt
 from .models import Resume, UploadedResume
 from .utils import extract_resume_text, analyze_resume_nlp
 
+
+def _authenticated_user(request):
+    if not request.user.is_authenticated:
+        return None, JsonResponse({'message': 'Authentication required'}, status=401)
+    return request.user, None
+
 def format_resume_obj(r):
     return {
         '_id': str(r.id),
@@ -30,12 +36,11 @@ def format_resume_obj(r):
 
 @csrf_exempt
 def api_resume_list(request):
-    user = request.user if request.user.is_authenticated else None
+    user, error = _authenticated_user(request)
+    if error:
+        return error
     if request.method == 'GET':
-        if user:
-            qs = Resume.objects.filter(user=user)
-        else:
-            qs = Resume.objects.all()[:10]
+        qs = Resume.objects.filter(user=user)
         return JsonResponse({'resumes': [format_resume_obj(r) for r in qs]})
 
     elif request.method == 'POST':
@@ -48,10 +53,6 @@ def api_resume_list(request):
         skills = data.get('skills', '')
         if isinstance(skills, list):
             skills = ", ".join(skills)
-
-        if not user:
-            from django.contrib.auth.models import User
-            user = User.objects.first()
 
         res_obj = Resume.objects.create(
             user=user,
@@ -66,8 +67,11 @@ def api_resume_list(request):
 
 @csrf_exempt
 def api_resume_detail(request, pk):
+    user, error = _authenticated_user(request)
+    if error:
+        return error
     try:
-        r = Resume.objects.get(pk=pk)
+        r = Resume.objects.get(pk=pk, user=user)
     except Resume.DoesNotExist:
         return JsonResponse({'message': 'Resume not found'}, status=404)
 
@@ -97,8 +101,11 @@ def api_resume_detail(request, pk):
 
 @csrf_exempt
 def api_resume_duplicate(request, pk):
+    user, error = _authenticated_user(request)
+    if error:
+        return error
     try:
-        r = Resume.objects.get(pk=pk)
+        r = Resume.objects.get(pk=pk, user=user)
         dup = Resume.objects.create(
             user=r.user,
             title=f"{r.title} (Copy)",
@@ -121,10 +128,9 @@ def api_resume_analyze(request):
     text = ""
     if 'file' in request.FILES:
         up_file = request.FILES['file']
-        user = request.user if request.user.is_authenticated else None
-        if not user:
-            from django.contrib.auth.models import User
-            user = User.objects.first()
+        user, error = _authenticated_user(request)
+        if error:
+            return error
 
         up_obj = UploadedResume.objects.create(
             user=user,
