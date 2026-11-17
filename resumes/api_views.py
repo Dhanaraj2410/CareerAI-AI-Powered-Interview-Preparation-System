@@ -65,6 +65,8 @@ def api_resume_list(request):
         )
         return JsonResponse({'resume': format_resume_obj(res_obj)})
 
+    return JsonResponse({'message': 'Method not allowed'}, status=405)
+
 @csrf_exempt
 def api_resume_detail(request, pk):
     user, error = _authenticated_user(request)
@@ -99,11 +101,15 @@ def api_resume_detail(request, pk):
         r.delete()
         return JsonResponse({'message': 'Resume deleted'})
 
+    return JsonResponse({'message': 'Method not allowed'}, status=405)
+
 @csrf_exempt
 def api_resume_duplicate(request, pk):
     user, error = _authenticated_user(request)
     if error:
         return error
+    if request.method != 'POST':
+        return JsonResponse({'message': 'Method not allowed'}, status=405)
     try:
         r = Resume.objects.get(pk=pk, user=user)
         dup = Resume.objects.create(
