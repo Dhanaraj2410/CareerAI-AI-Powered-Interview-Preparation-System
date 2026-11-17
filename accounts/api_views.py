@@ -76,10 +76,16 @@ def api_register(request):
     
     if not email or not password:
         return JsonResponse({'message': 'Email and password are required.'}, status=400)
+
+    if User.objects.filter(email__iexact=email).exists():
+        return JsonResponse({'message': 'An account with this email already exists.'}, status=409)
         
     username = email.split('@')[0]
-    if User.objects.filter(username=username).exists():
-        username = f"{username}_{User.objects.count() + 1}"
+    suffix = 1
+    base_username = username
+    while User.objects.filter(username=username).exists():
+        suffix += 1
+        username = f"{base_username}_{suffix}"
 
     user = User.objects.create_user(username=username, email=email, password=password)
     parts = name.split(' ', 1)
