@@ -9,3 +9,11 @@
 
 Keep changes focused, document user-facing behavior, and never commit credentials or generated model files.
 
+For a dependency-light local validation run, use SQLite explicitly:
+
+```powershell
+$env:USE_MYSQL = "False"
+python manage.py check
+python manage.py test
+```
+
