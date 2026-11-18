@@ -22,6 +22,6 @@ C:/Users/Admin/anaconda3/python.exe manage.py check
 C:/Users/Admin/anaconda3/python.exe manage.py test
 ```
 
-The suite covers registration, aptitude scoring, CORS origin handling, and
-resume API ownership boundaries. Keep new endpoint behavior covered by a test
-before changing it.
+The suite covers registration, aptitude scoring, CORS origin handling, resume
+API ownership boundaries, and dashboard progress calculations. Keep new
+endpoint behavior covered by a test before changing it.
