@@ -9,6 +9,7 @@ urlpatterns = [
     path('profile/', views.profile_view, name='profile'),
     path('password-change/', views.change_password_view, name='change_password'),
     path('dashboard/', views.dashboard_view, name='dashboard'),
+    path('api/dashboard/progress', views.api_dashboard_progress, name='api_dashboard_progress'),
 
     # AI Learning Assistant / Chatbot
     path('assistant/', views.assistant_view, name='ai_assistant'),
