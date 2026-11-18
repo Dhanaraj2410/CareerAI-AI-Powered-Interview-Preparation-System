@@ -12,6 +12,7 @@ from aptitude.models import AptitudeResult, CodingSubmission
 from resumes.models import Resume, UploadedResume
 from interview.models import InterviewSession, GDSession
 from feedback.models import Feedback
+from .progress import progress_snapshot
 from ml_engine.predictor import predict_candidate_performance
 from careerai.gemini_service import (
     is_gemini_configured,
@@ -118,16 +119,13 @@ def dashboard_view(request):
     user = request.user
     profile, _ = UserProfile.objects.get_or_create(user=user)
     
-    # Calculate scores from user's actual sessions
-    latest_aptitude = AptitudeResult.objects.filter(user=user).order_by('-created_at').first()
-    aptitude_score = round(latest_aptitude.percentage, 1) if latest_aptitude else 75.0
-    
-    latest_resume = UploadedResume.objects.filter(user=user).order_by('-uploaded_at').first()
-    resume_score = round(latest_resume.resume_score, 1) if latest_resume else 78.0
-    
-    latest_interview = InterviewSession.objects.filter(user=user).order_by('-created_at').first()
-    technical_score = round(latest_interview.total_score, 1) if latest_interview else 82.0
-    communication_score = round(latest_interview.avg_confidence, 1) if latest_interview else 72.0
+    progress = progress_snapshot(user)
+    scores = progress['scores']
+    # The predictor needs numeric inputs, while the UI keeps missing metrics as None.
+    aptitude_score = scores['aptitude'] or 0
+    resume_score = scores['resume'] or 0
+    technical_score = scores['technical'] or 0
+    communication_score = scores['communication'] or 0
     
     # Run ML Prediction
     ml_result = predict_candidate_performance(
@@ -138,7 +136,7 @@ def dashboard_view(request):
     )
     
     # Overall Performance
-    overall_score = round((aptitude_score + resume_score + technical_score + communication_score) / 4.0, 1)
+    overall_score = progress['overall']
     
     latest_feedback = Feedback.objects.filter(user=user).order_by('-created_at').first()
     recent_interviews = InterviewSession.objects.filter(user=user).order_by('-created_at')[:5]
@@ -157,10 +155,17 @@ def dashboard_view(request):
         'recent_interviews': recent_interviews,
         'coding_solved': coding_solved,
         'gd_count': gd_count,
-        'gemini_active': is_gemini_configured()
+        'gemini_active': is_gemini_configured(),
+        'progress': progress,
     }
     
     return render(request, 'dashboard.html', context)
+
+
+@login_required
+def api_dashboard_progress(request):
+    """Return the authenticated user's derived progress data for client apps."""
+    return JsonResponse(progress_snapshot(request.user))
 
 # -------------------------------------------------------------------
 # AI Learning Assistant / Chatbot Module
