@@ -7,22 +7,18 @@ from accounts.models import UserProfile
 from aptitude.models import AptitudeResult
 from resumes.models import UploadedResume
 from interview.models import InterviewSession
+from accounts.progress import latest_scores
 
 @login_required
 def generate_feedback_view(request):
     user = request.user
     profile, _ = UserProfile.objects.get_or_create(user=user)
 
-    # Gather scores
-    latest_aptitude = AptitudeResult.objects.filter(user=user).order_by('-created_at').first()
-    aptitude_score = round(latest_aptitude.percentage, 1) if latest_aptitude else 75.0
-
-    latest_resume = UploadedResume.objects.filter(user=user).order_by('-uploaded_at').first()
-    resume_score = round(latest_resume.resume_score, 1) if latest_resume else 78.0
-
-    latest_interview = InterviewSession.objects.filter(user=user).order_by('-created_at').first()
-    technical_score = round(latest_interview.total_score, 1) if latest_interview else 82.0
-    communication_score = round(latest_interview.avg_confidence, 1) if latest_interview else 72.0
+    scores = latest_scores(user)
+    aptitude_score = scores['aptitude'] or 0
+    resume_score = scores['resume'] or 0
+    technical_score = scores['technical'] or 0
+    communication_score = scores['communication'] or 0
 
     # Call AI Feedback Service
     res = generate_ai_career_feedback(
