@@ -26,6 +26,40 @@
     </div>
 </div>
 
+<div class="row g-3 mb-4">
+    <div class="col-lg-8">
+        <div class="glass-card p-4 h-100">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div>
+                    <span class="text-uppercase small fw-bold font-monospace text-info">YOUR PREPARATION PULSE</span>
+                    <h5 class="text-white mb-0 mt-1">{{ progress.active_days }}/7 active days</h5>
+                </div>
+                <span class="badge bg-success font-monospace"><i class="fa-solid fa-fire me-1"></i>{{ progress.streak }} day streak</span>
+            </div>
+            <div class="d-flex gap-2 align-items-end" style="height: 58px;">
+                {% for day in progress.activity %}
+                <div class="flex-fill text-center" title="{{ day.date }}: {{ day.count }} activities">
+                    <div class="progress progress-dark" style="height: 38px; display:flex; align-items:flex-end;">
+                        <div class="progress-bar bg-info" style="height: {% if day.count %}{{ day.count|add:'0'|default:1 }}0%{% else %}8%{% endif %}; min-height: 4px;"></div>
+                    </div>
+                    <small class="text-muted font-monospace">{{ day.label }}</small>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="glass-card p-4 h-100 d-flex flex-column justify-content-between">
+            <div>
+                <span class="text-uppercase small fw-bold font-monospace text-warning">NEXT BEST ACTION</span>
+                <h5 class="text-white mt-2 mb-1">{{ progress.next_action.label }}</h5>
+                <p class="small text-muted mb-3">{{ progress.next_action.reason }}</p>
+            </div>
+            <a href="{% url progress.next_action.url_name %}" class="btn btn-sm btn-ai-primary">Continue preparation <i class="fa-solid fa-arrow-right ms-1"></i></a>
+        </div>
+    </div>
+</div>
+
 <!-- 4 Dimension Score Metrics Row -->
 <div class="row g-3 mb-4">
     <!-- Aptitude Score (20% Weight) -->
@@ -35,10 +69,10 @@
                 <span class="small font-monospace text-muted">APTITUDE</span>
                 <i class="fa-solid fa-calculator text-warning"></i>
             </div>
-            <div class="stat-value text-warning fs-2 fw-extrabold">{{ aptitude_score }}%</div>
-            <div class="small text-muted font-monospace mt-1">Weight: 20%</div>
+            <div class="stat-value text-warning fs-2 fw-extrabold">{% if progress.scores.aptitude != None %}{{ progress.scores.aptitude }}%{% else %}—{% endif %}</div>
+            <div class="small text-muted font-monospace mt-1">{% if progress.scores.aptitude != None %}Weight: 20%{% else %}Not started{% endif %}</div>
             <div class="progress progress-dark mt-2" style="height: 6px;">
-                <div class="progress-bar progress-bar-amber" style="width: {{ aptitude_score }}%"></div>
+                <div class="progress-bar progress-bar-amber" style="width: {% if progress.scores.aptitude != None %}{{ progress.scores.aptitude }}{% else %}0{% endif %}%"></div>
             </div>
         </div>
     </div>
@@ -50,10 +84,10 @@
                 <span class="small font-monospace text-muted">RESUME ATS</span>
                 <i class="fa-solid fa-file-contract text-info"></i>
             </div>
-            <div class="stat-value text-info fs-2 fw-extrabold">{{ resume_score }}%</div>
-            <div class="small text-muted font-monospace mt-1">Weight: 20%</div>
+            <div class="stat-value text-info fs-2 fw-extrabold">{% if progress.scores.resume != None %}{{ progress.scores.resume }}%{% else %}—{% endif %}</div>
+            <div class="small text-muted font-monospace mt-1">{% if progress.scores.resume != None %}Weight: 20%{% else %}Not started{% endif %}</div>
             <div class="progress progress-dark mt-2" style="height: 6px;">
-                <div class="progress-bar progress-bar-cyan" style="width: {{ resume_score }}%"></div>
+                <div class="progress-bar progress-bar-cyan" style="width: {% if progress.scores.resume != None %}{{ progress.scores.resume }}{% else %}0{% endif %}%"></div>
             </div>
         </div>
     </div>
@@ -65,10 +99,10 @@
                 <span class="small font-monospace text-muted">TECHNICAL</span>
                 <i class="fa-solid fa-laptop-code text-primary"></i>
             </div>
-            <div class="stat-value text-primary fs-2 fw-extrabold">{{ technical_score }}%</div>
-            <div class="small text-muted font-monospace mt-1">Weight: 40%</div>
+            <div class="stat-value text-primary fs-2 fw-extrabold">{% if progress.scores.technical != None %}{{ progress.scores.technical }}%{% else %}—{% endif %}</div>
+            <div class="small text-muted font-monospace mt-1">{% if progress.scores.technical != None %}Weight: 40%{% else %}Not started{% endif %}</div>
             <div class="progress progress-dark mt-2" style="height: 6px;">
-                <div class="progress-bar progress-bar-indigo" style="width: {{ technical_score }}%"></div>
+                <div class="progress-bar progress-bar-indigo" style="width: {% if progress.scores.technical != None %}{{ progress.scores.technical }}{% else %}0{% endif %}%"></div>
             </div>
         </div>
     </div>
@@ -80,10 +114,10 @@
                 <span class="small font-monospace text-muted">CONFIDENCE</span>
                 <i class="fa-solid fa-comments text-success"></i>
             </div>
-            <div class="stat-value text-success fs-2 fw-extrabold">{{ communication_score }}%</div>
-            <div class="small text-muted font-monospace mt-1">Weight: 20%</div>
+            <div class="stat-value text-success fs-2 fw-extrabold">{% if progress.scores.communication != None %}{{ progress.scores.communication }}%{% else %}—{% endif %}</div>
+            <div class="small text-muted font-monospace mt-1">{% if progress.scores.communication != None %}Weight: 20%{% else %}Not started{% endif %}</div>
             <div class="progress progress-dark mt-2" style="height: 6px;">
-                <div class="progress-bar progress-bar-emerald" style="width: {{ communication_score }}%"></div>
+                <div class="progress-bar progress-bar-emerald" style="width: {% if progress.scores.communication != None %}{{ progress.scores.communication }}{% else %}0{% endif %}%"></div>
             </div>
         </div>
     </div>
