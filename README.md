@@ -54,6 +54,12 @@ CareerAI is an enterprise-grade **Python + Django + Machine Learning + Google Ge
 - **Model Evaluation Benchmarks**: Accuracy (83.0%), Precision (80.4%), Recall (88.2%), F1 Score (84.1%).
 - **Readiness Classification**: `EXCELLENT PROFILE`, `HIGH READINESS`, `MODERATE READINESS`, `NEEDS IMPROVEMENT`.
 
+### 8. 📈 Trustworthy Preparation Progress
+- Dashboard scores remain **Not started** until a real assessment, resume analysis, or completed interview exists.
+- Seven-day activity pulse tracks assessments, coding submissions, interviews, group discussions, and resume uploads.
+- A prioritized next action guides each candidate toward the next missing baseline or weakest measured area.
+- Authenticated clients can consume the same data from `GET /api/dashboard/progress`.
+
 ---
 
 ## 🔒 Security & Environment Setup
